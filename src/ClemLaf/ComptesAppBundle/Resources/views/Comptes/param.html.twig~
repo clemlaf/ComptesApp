@@ -1,0 +1,26 @@
+{% extends 'TestTestAppBundle:Test:base.html.twig' %}
+{% block title %}
+  Paramètres
+{% endblock %}
+{% block stylesheets %}
+  <LINK rel="stylesheet" href="{{ asset('bundles/testtestapp/css/mon_style.css') }}" type="text/css">
+{% endblock %}
+{% block javascripts %}
+  <script language="Javascript" type="text/javascript" src="{{ asset('bundles/testtestapp/js/param.js') }}>
+{% endblock %}
+{% block body %}
+  <h1>Paramètres des comptes</h1>
+  <div class="tabpar">
+    <h2>Liste des comptes</h2>
+{{ include('TestTestAppBundle:Test:tab_par.html.twig',{'data':comptes,'type':'comptes'}) }}
+{{ form(form_comp) }}
+  </div>
+  <div class="tabpar"><h2>Liste des catégories</h2>
+{{ include('TestTestAppBundle:Test:tab_par.html.twig',{'data':categories,'type':'categories'}) }}
+{{ form(form_cat) }}
+</div>
+  <div class="tabpar"><h2>Liste des moyens de paiement</h2>
+{{ include('TestTestAppBundle:Test:tab_par.html.twig',{'data':moyens,'type':'moyens'}) }}
+{{ form(form_moy) }}
+</div>
+{% endblock %}

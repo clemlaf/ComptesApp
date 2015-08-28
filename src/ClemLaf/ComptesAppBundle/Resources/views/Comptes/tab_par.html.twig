@@ -1,0 +1,17 @@
+<table>
+  <tr>
+    <th>Id</th>
+    <th>Nom</th>
+  </tr>
+{% for li in data %}
+  <tr>
+    <td>{{ li['id'] }}</td>
+    <td>{{ li['name'] }}</td>
+    <td>
+      <button onClick="javascript:supprime('{{ type }}','{{ li['id'] }}')">
+	<img src="{{ asset('bundles/testtestapp/images/b_drop.png') }}"/>
+      </button>
+    </td>
+  </tr>
+{% endfor %}
+</table>

@@ -1,0 +1,22 @@
+ClemLaf\ComptesAppBundle\Entity\Comptes\Compte:
+    type: entity
+    table: null
+    repositoryClass: ClemLaf\ComptesAppBundle\Entity\Comptes\CompteRepository
+    fields:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+        cpNam:
+            type: string
+            length: '100'
+            column: cp_nam
+    oneToMany:
+        entriesD:
+            targetEntity: Entree
+            mappedBy: cpD
+        entriesS:
+            targetEntity: Entree
+            mappedBy: cpS
+    lifecycleCallbacks: {  }

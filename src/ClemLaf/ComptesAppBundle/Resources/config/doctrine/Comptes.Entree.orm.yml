@@ -1,0 +1,58 @@
+ClemLaf\ComptesAppBundle\Entity\Comptes\Entree:
+    type: entity
+    table: null
+    repositoryClass: ClemLaf\ComptesAppBundle\Entity\Comptes\EntreeRepository
+    fields:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+        date:
+            type: date
+#        cpS:
+#            type: integer
+#            column: cp_s
+#        cpD:
+#            type: integer
+#            column: cp_d
+#        moy:
+#            type: integer
+#        cat:
+ #           type: integer
+        com:
+            type: text
+        pr:
+            type: integer
+        poS:
+            type: boolean
+            column: po_s
+        poD:
+            type: boolean
+            column: po_d
+    manyToOne:
+        cpD:
+            targetEntity: Compte
+            inversedBy: entriesD
+            joinColumn:
+                name: cp_d
+                referencedColumnName: id
+        cpS:
+            targetEntity: Compte
+            inversedBy: entriesS
+            joinColumn:
+                name: cp_s
+                referencedColumnName: id
+        category:
+            targetEntity: Category
+            inversedBy: entries
+            joinColumn:
+                name: cat
+                referencedColumnName: id
+        moyen:
+            targetEntity: Moyen
+            inversedBy: entries
+            joinColumn:
+                name: moy
+                referencedColumnName: id
+    lifecycleCallbacks: {  }

@@ -1,0 +1,19 @@
+test_test_app_homepage:
+    pattern:  /hellotest/{name}
+    defaults: { _controller: TestTestAppBundle:Test:index }
+
+test_test_app_update:
+    pattern: /update
+    defaults: { _controller: TestTestAppBundle:Test:update }
+
+test_test_app_delete:
+    pattern: /delete
+    defaults: { _controller: TestTestAppBundle:Test:delete }
+
+test_test_app_param:
+    pattern: /param
+    defaults: { _controller: TestTestAppBundle:Param:index }
+
+test_test_app_delparam:
+    pattern: /delparam
+    defaults: { _controller: TestTestAppBundle:Param:delete }

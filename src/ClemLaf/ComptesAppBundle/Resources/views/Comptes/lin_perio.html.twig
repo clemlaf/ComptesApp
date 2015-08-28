@@ -1,0 +1,49 @@
+<tr>
+  <td><input name="id" type="text" value={{ li.id }} readonly size="3" style="Text-align:right">
+    <a id="{{ li.id }}"></a></td>
+  <td>
+    <input name="last_date" type="text" id="ldat{{ li.id }}" value="{{ li.lastDate|date('d/m/Y') }}" size=8 onChange="javascript:ajax(rw{{ li.id }});" ondblclick="javascript:NewCssCal('dat{{ li.id }}','ddMMyyyy', 'arrow');" autocomplete="off">
+  </td>
+  <td>
+    <input name="end_date" type="text" id="edat{{ li.id }}" value="{{ li.endDate|date('d/m/Y') }}" size=8 onChange="javascript:ajax(rw{{ li.id }});" ondblclick="javascript:NewCssCal('dat{{ li.id }}','ddMMyyyy', 'arrow');" autocomplete="off">
+  </td>
+  <td>
+    <input name="mois" type="text" id="mo{{ li.id }}" value="{{ li.mois }}" size=8 onChange="javascript:ajax(rw{{ li.id }});" autocomplete="off">
+  </td>
+  <td>
+    <input name="jours" type="text" id="jo{{ li.id }}" value="{{ li.jours }}" size=8 onChange="javascript:ajax(rw{{ li.id }});" autocomplete="off">
+  </td>
+  <td id="x{{ li.id }}">
+    {{ include(
+    'TestTestAppBundle:Test:dodropbox.html.twig',
+    {'na':'cp_s','z0':false,'sele':li.cpS,'add':'style="width:70px"','add2':li.id,'res':comptes
+    })}}
+  </td>
+  <td>
+    {{ include(
+    'TestTestAppBundle:Test:dodropbox.html.twig',
+    {'na':'cp_d','z0':'--------','sele':li.cpD,'add':'','add2':li.id,'res':comptes
+    })}}
+  </td>
+  <td>
+    {{ include(
+    'TestTestAppBundle:Test:dodropbox.html.twig',
+    {'na':'moy','z0':'----','sele':li.moy,'add':'', 'add2':li.id,'res':moyens
+    })}}
+  </td>
+  <td>
+    {{ include(
+    'TestTestAppBundle:Test:dodropbox.html.twig',
+    {'na':'cat','z0':'--------','sele':li.category==NULL?0:li.category.id,'add':'','add2':li.id,'res':categories
+    })}}
+  </td>
+  <td>
+    <input name="com" type="text" value="{{ li.com }}" onChange="javascript:ajax(rw{{ li.id }});"></td>
+  <td>
+    <input id="pr{{ li.id }}" name="pr" type="text" value="{{ li.pr/100 }}" size=7 style="Text-Align:right;color:{% if li.pr>0 %}#00AA00{% else %}#AA0000{% endif %}" onChange="javascript:ajax(rw{{ li.id }});" autocomplete="off"></td>
+  <td>
+    <button onClick="javascript:supprime(rw{{ li.id }});" name="supp" type="reset">
+      <img src="{{ asset('bundles/testtestapp/images/b_drop.png') }}">
+    </button>
+  </td>
+</tr>

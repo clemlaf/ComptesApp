@@ -1,0 +1,212 @@
+{% extends '::base.html.twig' %}
+
+{% block title %}Table des comptes{% endblock %}
+{% block stylesheets %}
+    <LINK rel="stylesheet" href="./mon_style.css" type="text/css">
+	<link rel="stylesheet" href="scripts/jquery/jNotify.jquery.css" type="text/css" />
+{% endblock %}
+{% block javascripts %}
+<script language="JavaScript" type="text/javascript" src="calendar/datetimepicker_css.js"></script>
+<script language="JavaScript" type="text/javascript">
+function change_signe(ii){
+//alert("pr"+ii);
+var iidd="pr"+ii
+var aa=document.getElementById(iidd).value;
+if(parseFloat(aa)<0){
+document.getElementById(iidd).value=aa.substr(1,aa.length);
+$(document.getElementById(iidd)).css({"color" : "#00AA00"});
+}else{
+document.getElementById(iidd).value="-"+aa;
+$(document.getElementById(iidd)).css({"color" : "#AA0000"});
+}}
+
+
+</script>
+<script type="text/javascript" src="scripts/jquery/jquery.js"></script>
+<script type="text/javascript" src="scripts/jquery/jNotify.jquery.js"></script>
+<script type="text/javascript" src="update_ajax.js"></script>
+{% endblock %}
+
+{% block body %}
+    <h1>Les comptes</h1>
+    <form name="choix du compte" id="cdc" method="post" action="table.php">
+      <table border=1 style="overflow:hidden" width="100%">
+	<tr>
+	  <td colspan=3 style="border-width:0px;text-align:center">
+	    
+	    {{ Dodropbox('nome','**Choisir un compte**',nom,'onChange="submit();"','comptes order by b_nam');  }}
+	  </td><td colspan=3 style="border-width:0px;text-align:center">
+	    Période du <input type="text" id="dat1" name="dat1" size=8 value="<?php echo $d1?>" onChange="submit();" ondblclick="javascript:NewCssCal('dat1','ddMMyyyy', 'arrow');" autocomplete="off">
+	     au <input type="text" id="dat2" name="dat2" size=8 value="<?php echo $d2?>" onChange="submit();" ondblclick="javascript:NewCssCal('dat2','ddMMyyyy', 'arrow')" autocomplete="off">
+	  </td>
+	  <td style="border-width:0px;text-align:center">
+	    <button type="button" onclick="self.location.href='graph.php'">Graphique</button> </td>
+	  <td colspan=2 style="border-width:0px;text-align:center">
+	    <button type="button" onclick="self.location.href='periodic.php'">Op. périod.</button></td>
+ {% if isset($_SESSION['usr']) %}
+<td colspan=3 style="border-width:0px;text-align:center">
+<button type="button" onclick="self.location.href=\'deconnexion.php\'">Déconnexion</button></td>
+ {% endif %}
+	</tr>
+	<tr><td colspan=3 style="border-width:0px;text-align:left">
+<button type="button" onclick="document.getElementById('npage').value=parseInt(document.getElementById('npage').value)+1;submit();" style="width:12px;padding:0px;border:1px">P</button>
+	    <input type="text" style="text-align:right;width:16px" name="off" id="npage" value="<?php echo $off?>" onChange="submit();" size=1>
+	    <button type="button" onclick="document.getElementById('npage').value=parseInt(document.getElementById('npage').value)-1;submit();" style="width:12px;padding:0px;border:1px">N</button>
+	  <input type="text" style="text-align:right" name="nbr" size=1 value="{{ nbr }}" onChange="submit();">/{{ ccc[0] }}
+&nbsp;&nbsp;<button type="submit" name="ord">Chg. ordre</button>
+</td>
+	  <td style="border-width:0px;text-align:center" >
+	  {{ Dodropbox('fdes','*Compte destination*',fdes,'onChange="submit();"','comptes order by b_nam'); }}
+	  </td>
+	  <td style="border-width:0px;text-align:center" >
+{{
+   Dodropbox('fmoy', '*Moyen*',fmoy,'onChange="submit();"','moyen'); }}
+</td><td style="border-width:0px;text-align:center">
+{{
+  Dodropbox('fcat', '**Choisir une Catégorie**', fcat,'onChange="submit();"','categories order by c_nam' );
+}}
+	  </td><td style="border-width:0px;text-align:center">
+<input type="text" style="text-align:left" name="rcom" value="{{ rcom }}" onChange="submit();">
+	  </td>
+	  <td colspan=2 style="border-width:0px;text-align:center">
+	    <button type="button" onclick="self.location.href='budget.php'">Récap dépenses</button></td>
+	  <td colspan=3 style="border-width:0px;text-align:center"><input type="submit" value="Recharger la table"></td>
+	</tr>
+      </table>
+    </form>
+    <table border=1 id="princ" style="overflow:hidden" width="100%">
+      <th>index</th><th>Date</th><th>Compte source</th><th>Compte destination</th><th>Moyen</th><th>Catégorie</th><th>Commentaire</th><th>Prix</th><th></th><th>Solde</th>
+      {% if $_SESSION['ord']>0 %}
+    $tot=' asc';
+    $debut=max(($ccc[0]-($off+1)*$nbr),0);
+{% else %}
+$tot=' desc';
+$debut=$off*$nbr;
+{% endif %}
+
+    {% if _SESSION['ord']<=0 %}
+<tr id="rwaddline">
+      <td><a id="new"></a></td><td><input name="date" id="date" type="text" size=8 ondblclick="javascript:NewCssCal(\'date\',\'ddMMyyyy\', \'arrow\');" autocomplete="off"></td>
+       <td>
+
+{{Dodropbox('cp_s',False,nom,' style="width:70px"','comptes order by b_nam');}}
+</td>
+<td>
+{{Dodropbox('cp_d','--------',0,'','comptes order by b_nam');}}
+</td>
+<td>
+{{Dodropbox('moy','---',0,'','moyen');}}
+</td>
+<td>
+{{Dodropbox('cat','--------',0,'','categories order by c_nam');}}
+</td>
+  <td><input name="com" type="text" ></td>
+	<td><input name="pr" type="text" size=7 style="Text-Align:right" onChange="javascript:ajout(rwaddline,true);" autocomplete="off"></td><td></td>
+	<td><button onClick="javascript:ajout(rwaddline,true)"><img src="pictures/b_snewtbl.png"></button></td> 
+	<td><button onClick="javascript:clearline(rwaddline)"><img src="pictures/b_close.png"></button></td>
+	</tr>
+{% endif %}
+
+
+{% if nbr!='' && ccc %}
+  $tot=$tot.' limit '.$debut.', '.$nbr;
+$wh=' WHERE uni.comptea="'.$nom.'"'.$bef.''.$aft.''.$ccat.''.$cmoy.''.$cdes.''.$ccom.' order by uni.e_date'.$tot;
+$que='Select date_format(uni.e_date,"%d/%m/%Y"), uni.comptea, uni.compteb, uni.cat, uni.com, uni.pr, (select sum(t1.pr) from (
+(SELECT entries.index, entries.e_date, entries.cp_s as comptea, entries.prix as pr FROM entries)
+UNION
+(SELECT entries.index, entries.e_date, entries.cp_d as comptea, -1*entries.prix  as pr FROM entries)) as t1
+where t1.e_date <= uni.e_date and t1.comptea=uni.comptea) as solde, uni.index, uni.poi, uni.moy
+from (
+(SELECT entries.index, entries.e_date, entries.cp_s as comptea, entries.cp_d as compteb, entries.cat, entries.com, entries.prix as pr, entries.pt as poi, entries.moy FROM entries)
+UNION
+(SELECT entries.index,entries.e_date, entries.cp_d as comptea, entries.cp_s as compteb, entries.cat, entries.com, -1*entries.prix  as pr, entries.ptd as poi, entries.moy FROM entries)
+) as uni
+'.$wh;
+//echo $que;
+$res2=mysql_query($que);
+$ii=0;
+while($res2 && $tab=mysql_fetch_row($res2)){
+  $ii++;
+  if($ii%2==0)
+    $clas=' class="paire"';
+  else
+    $clas=' class="impaire"';
+  echo '
+<tr'.$clas.' id="rw'.$tab[7].'">
+<td><input name="id" type="text" value='.$tab[7].' readonly size="3" style="Text-align:right">
+<a id="'.$tab[7].'"></a></td>
+<td><input name="date" type="text" value="'.$tab[0].'" size=8 onChange="javascript:ajax(rw'.$tab[7].');" ondblclick="javascript:NewCssCal(\'dat1\',\'ddMMyyyy\', \'arrow\');" autocomplete="off"></td>
+<td id="x'.$tab[7].'">';
+  Dodropbox('cp_s',False,$tab[1],'style="width:70px" onChange="javascript:ajax(rw'.$tab[7].');"','comptes order by b_nam');
+  echo '</td>
+<td>';
+  Dodropbox('cp_d','--------',$tab[2],' onChange="javascript:ajax(rw'.$tab[7].');"','comptes order by b_nam');
+  echo '</td>
+<td>';
+Dodropbox('moy','----',$tab[9],' onChange="javascript:ajax(rw'.$tab[7].');"','moyen');
+  echo '</td>
+<td>';
+ Dodropbox('cat','--------',$tab[3],' onChange="javascript:ajax(rw'.$tab[7].');"','categories order by c_nam');
+if($tab[5]>0){
+$ttbt=1;
+$couleur='#00AA00';
+}else{
+$ttbt=-1;
+$couleur='#AA0000';}
+ echo '</td>
+<td><input name="com" type="text" value="'.$tab[4].'" onChange="javascript:ajax(rw'.$tab[7].');"></td>
+<td>
+<input id="pr'.$ii.'" name="pr" type="text" value="'.($tab[5] / 100).'" size=7 style="Text-Align:right;color:'.$couleur.'" onChange="javascript:ajax(rw'.$tab[7].');" ondblclick="change_signe('.$ii.');javascript:ajax(rw'.$tab[7].');" autocomplete="off"></td>';
+ $cc='';
+ if($tab[8]==1)
+   $cc='checked';
+ echo '<td><input name="pt" class="check" type="checkbox" onChange="javascript:ajax(rw'.$tab[7].');" '.cc.'></td>
+<td style="Text-Align:right">'.(tab[6] / 100).'</td>
+<td><button onClick="javascript:supprime(rw'.tab[7].');" name="supp" type="reset"><img src="pictures/b_drop.png"></button></td>
+</tr>';    
+{% endfor %}
+
+{{ if $_SESSION['ord']>0 }}
+  <tr id="rwaddline">
+      <td><a id="new"></a></td><td><input name="date" id="date" type="text" size=8 ondblclick="javascript:NewCssCal(\'date\',\'ddMMyyyy\', \'arrow\')" autocomplete="off"></td>
+       <td>
+
+{{ Dodropbox('cp_s',False,nom,'style="width:70px"','comptes order by b_nam'); }}
+</td>
+<td>
+{{ Dodropbox('cp_d','--------',0,'','comptes order by b_nam'); }}
+</td>
+<td>
+{{ Dodropbox('moy','---',0,'','moyen'); }}
+</td>
+<td>
+{{ Dodropbox('cat','--------',0,'','categories order by c_nam'); }}
+</td>
+  <td><input name="com" type="text"></td>
+	<td><input name="pr" type="text" size=7 style="Text-Align:right" onChange="javascript:ajout(rwaddline);" autocomplete="off"></td><td></td>
+	<td><button onClick="javascript:ajout(rwaddline);"><img src="pictures/b_snewtbl.png"></button></td> 
+	<td><button onClick="javascript:clearline(rwaddline)"><img src="pictures/b_close.png"></button></td>
+	</tr>
+{% endif %}
+      <tr>
+	<td colspan=6 style="text-align:right">Solde filtré&nbsp;</td>
+	<td style="text-align:right">
+	  <?php echo $ccc[1]/100;?>
+	</td>
+	<td colspan=2 style="text-align:right">Solde pointé&nbsp;</td>
+	<td style="text-align:right" id="soldepointe">
+<?php 
+$que='select sum(t1.pr) from (
+(SELECT entries.index, entries.e_date, entries.cp_s as comptea, entries.prix as pr, entries.pt as poi FROM entries)
+UNION
+(SELECT entries.index, entries.e_date, entries.cp_d as comptea, -1*entries.prix as pr, entries.ptd as poi FROM entries)) as t1
+where t1.poi=1 and t1.comptea='.$nom;
+$res=mysql_query($que);
+if($res && $cc=mysql_fetch_row($res))
+  echo $cc[0]/100;
+?>
+	</td>
+      </tr>
+    </table>
+
+{% endblock %}

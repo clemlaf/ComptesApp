@@ -1,0 +1,7 @@
+function supprime(type,id){
+    var req=null;
+    req= new Request();
+    req.open("POST","../delparam",true)
+    req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    req.send("type="+type+"&id="+id);
+}

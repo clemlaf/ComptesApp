@@ -1,0 +1,45 @@
+{% extends 'TestTestAppBundle:Test:base.html.twig' %}
+{% form_theme form 'TestTestAppBundle:Form:period.html.twig' %}
+
+{% block title %}
+  Opération Périodiques
+{% endblock %}
+{% block stylesheets %}
+  <LINK rel="stylesheet" href="{{ asset('bundles/testtestapp/css/mon_style.css') }}" type="text/css">
+  <link rel="stylesheet" href="{{ asset('bundles/testtestapp/css/jNotify.jquery.css') }}" type="text/css" />
+{% endblock %}
+{% block javascripts %}
+  <script language="JavaScript" type="text/javascript" src="{{ asset('bundles/testtestapp/js/calendar/datetimepicker_css.js') }}"></script>
+  <script type="text/javascript" src="{{ asset('bundles/testtestapp/js/jquery.js') }}"></script>
+  <script type="text/javascript" src="{{ asset('bundles/testtestapp/js/jNotify.jquery.js')}}"></script>
+  <script type="text/javascript" src="{{ asset('bundles/testtestapp/js/period_ajax.js')}}"></script>
+{% endblock %}
+{% block body %}
+  <h1>Les opérations périodiques</h1>
+  <table>
+    <tr>
+      <th>index</th>
+      <th>Date</th>
+      <th>Date d'expiration</th>
+      <th>Mois</th>
+      <th>Jours</th>
+      <th>Compte source</th>
+      <th>Compte destination</th>
+      <th>Moyen</th>
+      <th>Catégorie</th>
+      <th>Commentaire</th>
+      <th>Prix</th>
+      <th></th>
+    </tr>
+    {% for li in periodics %}
+      {{ include('TestTestAppBundle:Test:lin_perio.html.twig',{'comptes':comptes, 'moyens':moyens, 'categories':categories, 'li':li}) }}
+    {% endfor %}
+  </table>
+    <div>
+   {{ form_start(form) }}
+      {% for frow in form.children %}
+	{{ form_row(frow) }}
+      {% endfor %}
+      {{ form_end(form) }}
+    </div>
+{% endblock %}

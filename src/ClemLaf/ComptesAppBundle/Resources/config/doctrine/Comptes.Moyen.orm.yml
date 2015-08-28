@@ -1,0 +1,19 @@
+ClemLaf\ComptesAppBundle\Entity\Comptes\Moyen:
+    type: entity
+    table: null
+    repositoryClass: ClemLaf\ComptesAppBundle\Entity\Comptes\MoyenRepository
+    fields:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+        mNam:
+            type: string
+            length: '100'
+            column: m_nam
+    oneToMany:
+        entries:
+            targetEntity: Entree
+            mappedBy: moyen
+    lifecycleCallbacks: {  }

@@ -1,0 +1,7 @@
+parameters:
+#    test_test_app.example.class: Test\TestAppBundle\Example
+
+services:
+#    test_test_app.example:
+#        class: %test_test_app.example.class%
+#        arguments: [@service_id, "plain_value", %parameter%]

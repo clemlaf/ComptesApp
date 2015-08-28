@@ -1,0 +1,41 @@
+ClemLaf\ComptesAppBundle\Entity\Comptes\Periodic:
+    type: entity
+    table: null
+    repositoryClass: ClemLaf\ComptesAppBundle\Entity\Comptes\PeriodicRepository
+    fields:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+        lastDate:
+            type: date
+            column: last_date
+        endDate:
+            type: date
+            column: end_date
+        mois:
+            type: integer
+        jours:
+            type: integer
+        com:
+            type: string
+            length: 255
+        cpS:
+            type: integer
+            column: cp_s
+        cpD:
+            type: integer
+            column: cp_d
+        moy:
+            type: integer
+        prix:
+            type: integer
+    manyToOne:
+        category:
+            targetEntity: Category
+            inversedBy: periodics
+            joinColumn:
+                 name: cat
+                 referencedColumnName: id        
+    lifecycleCallbacks: {  }

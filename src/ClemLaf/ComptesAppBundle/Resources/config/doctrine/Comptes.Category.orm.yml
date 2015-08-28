@@ -1,0 +1,23 @@
+ClemLaf\ComptesAppBundle\Entity\Comptes\Category:
+    type: entity
+    table: null
+    repositoryClass: ClemLaf\ComptesAppBundle\Entity\Comptes\CategoryRepository
+    fields:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+        cNam:
+            type: string
+            length: '100'
+            column: c_nam
+    oneToMany:
+        entries:
+            targetEntity: Entree
+            mappedBy: category
+    oneToMany:
+        periodics:
+            targetEntity: Periodic
+            mappedBy: category
+    lifecycleCallbacks: {  }

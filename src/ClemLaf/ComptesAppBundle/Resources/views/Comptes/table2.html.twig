@@ -1,0 +1,29 @@
+{% extends 'ClemLafComptesAppBundle:Comptes:index.html.twig' %}
+
+{% block content %}
+<table border=1 id="princ" style="overflow:hidden" width="100%">
+    <th>index</th><th>Date</th><th>Compte source</th><th>Compte destination</th><th>Moyen</th><th>Catégorie</th><th>Commentaire</th><th>Prix</th><th></th><th>Solde</th>
+  {% if ord %}
+    {{ include(
+    'ClemLafComptesAppBundle:Comptes:line.html.twig',
+    {'style':'','comptes':comptes,'moyens':moyens,'tab':newline,'categories':categories, 'tabid':'new', 'soldes':soldes
+    })}}
+  {% endif %}
+  {% for tab in entrees%}
+    {{ tab.reverse(cpid) }}
+    {{ include(
+    'ClemLafComptesAppBundle:Comptes:line.html.twig',
+    {'style':cycle(['paire','impaire'],tab.id),'comptes':comptes,'moyens':moyens,'tab':tab,'categories':categories, 'tabid':tab.id, 'soldes':soldes
+    })}}
+  {% endfor %}
+  {% if not ord %}
+    {{ include(
+    'ClemLafComptesAppBundle:Comptes:line.html.twig',
+    {'style':'','comptes':comptes,'moyens':moyens,'tab':newline,'categories':categories, 'tabid':'new', 'soldes':soldes
+    }) }}
+  {% endif %}
+  <tr><td/><td/><td/><td/><td/><td/><td/><td colspan=2 style="text-align:right;">Solde Pointé&nbsp;:&nbsp;</td>
+    <td id="soldepointe">{{ solp }}</td>
+  </tr>
+</table>
+{% endblock %}
