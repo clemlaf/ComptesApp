@@ -12,4 +12,31 @@ use Doctrine\ORM\EntityRepository;
  */
 class EntreeRepository extends EntityRepository
 {
+    public function getSolde($compte,$entree,$pointage=null){
+	$em=$this->getEntityManager();
+	$param=$pointage?
+		array('nom'=> $compte):
+		array(
+	    'nom'=> $compte, 
+	    'dd' => $entree->getDate(), 
+	    'id' => $entree->getId()
+		);
+	$solde=$em->createQuery(
+	    'SELECT SUM(e.pr) as sol '.
+	    'FROM ClemLafComptesAppBundle:Comptes\Entree e '.
+	    'WHERE e.cpS=:nom'.
+	    ($pointage?' AND e.poS=1':' AND e.date<=:dd AND e.id<=:id')
+	)
+	->setParameters($param)
+	->getSingleScalarResult();
+	$solde=$solde-$em->createQuery(
+	    'SELECT SUM(e.pr) as sol '.
+	    'FROM ClemLafComptesAppBundle:Comptes\Entree e '.
+	    'WHERE e.cpD=:nom'.
+	    ($pointage?' AND e.poD=1':' AND e.date<=:dd AND e.id<=:id')
+	)
+	    ->setParameters($param)
+	    ->getSingleScalarResult();
+	return $solde; 
+    }
 }

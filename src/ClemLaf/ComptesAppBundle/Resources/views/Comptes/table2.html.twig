@@ -10,7 +10,6 @@
     })}}
   {% endif %}
   {% for tab in entrees%}
-    {{ tab.reverse(cpid) }}
     {{ include(
     'ClemLafComptesAppBundle:Comptes:line.html.twig',
     {'style':cycle(['paire','impaire'],tab.id),'comptes':comptes,'moyens':moyens,'tab':tab,'categories':categories, 'tabid':tab.id, 'soldes':soldes

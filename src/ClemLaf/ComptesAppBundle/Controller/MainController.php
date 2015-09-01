@@ -61,12 +61,11 @@ class MainController extends Controller
 	}
 
 	$type=$form->get('type')->getData();
-	//$nom_arr=$dummy->getCpS();//==null?null:implode(', ',$dummy->getCpS());//on peut choisir plusieurs comptes
 	$nom_tmp=array();
-	if($dummy->getCpS()==null){
+	if($form->get('cpS')->getData()==null){
 	    $nom=null;
 	}else{
-	    foreach($dummy->getCpS() as $tmp){
+	    foreach($form->get('cpS')->getData() as $tmp){
 		$nom_tmp[]=$tmp->getId();
 	    } 
 	    $nom=implode(',',$nom_tmp);
@@ -82,10 +81,10 @@ class MainController extends Controller
 	$fcat=$dummy->getCategory()==null?null:$dummy->getCategory()->getId();
 	$fmoy=$dummy->getMoyen()==null?null:$dummy->getMoyen()->getId();//on ne peut choisir qu'un moyen
 	$nom_tmp=array();
-	if($dummy->getCpD()==null){
+	if($form->get('cpD')->getData()==null){
 	    $fdes=null;
 	}else{
-	    foreach($dummy->getCpD() as $tmp){
+	    foreach($form->get('cpD')->getData() as $tmp){
 		$nom_tmp[]=$tmp->getId();
 	    }
 	    $fdes=implode(',',$nom_tmp);
@@ -118,52 +117,92 @@ class MainController extends Controller
 	    return $this->render('ClemLafComptesAppBundle:Comptes:graph.html.twig',
 		array('form' => $form->createView(),
 		'type'=> $type,
-		'cpid' => $dummy->getCpS(),
+		'cpid' => $form->get('cpS')->getData(),
 		'test'=> $dqlcom.''.$dqlquery,
 		'param'=> $param,)
 	    );
 
 	}else{
 	    /*gestion de la table*/
-
-	    $nbtot=$em->createQuery('SELECT COUNT(e) FROM ClemLafComptesAppBundle:Comptes\Entree e LEFT JOIN e.category c '.$dqlcom.''.$dqlquery)->setParameters($param)->getSingleScalarResult();
-
-	    $query=$em->createQuery('SELECT e FROM ClemLafComptesAppBundle:Comptes\Entree e LEFT JOIN e.category c '.$dqlcom.''.$dqlquery)->setParameters($param)->setFirstResult($ord?$deb*$nbr:max($nbtot-($deb+1)*$nbr,0))->setMaxResults($nbr);
+	    /*requete pour obtenir le nombre total d'entrée
+	     * correspodant aux critères*/
+	    $dql='SELECT COUNT(e) '.
+		'FROM ClemLafComptesAppBundle:Comptes\Entree e '.
+		'LEFT JOIN e.category c '.$dqlcom.''.$dqlquery;
+	    $nbtot=$em->createQuery($dql)->setParameters($param)->getSingleScalarResult();
+	    /*requete pour obtenir le nb d'entrée qu'on souhaite 
+	     * afficher.*/
+	    $dql='SELECT e '.
+		'FROM ClemLafComptesAppBundle:Comptes\Entree e '.
+		'LEFT JOIN e.category c '.$dqlcom.''.$dqlquery;
+	    $query=$em->createQuery($dql)
+		->setParameters($param)
+		->setFirstResult($ord?$deb*$nbr:max($nbtot-($deb+1)*$nbr,0))
+		->setMaxResults($nbr);
 	    $entrees=$query->getResult();
-
-	    $soldefiltre=$em->createQuery('SELECT SUM(e.pr) as sol FROM ClemLafComptesAppBundle:Comptes\Entree e LEFT JOIN e.category c WHERE e.cpS in ('.($nom==null?'0':$nom).')'.($fdes==null?'':' AND e.cpD in ('.$fdes.')').$dqlquery)->setParameters($param)->getSingleScalarResult() -
-		$em->createQuery('SELECT SUM(e.pr) as sol FROM ClemLafComptesAppBundle:Comptes\Entree e LEFT JOIN e.category c WHERE e.cpD in ('.($nom==null?'0':$nom).')'.($fdes==null?'':' AND e.cpS in ('.$fdes.')').$dqlquery)->setParameters($param)->getSingleScalarResult();
+	    /*requetes pour obtenir le solde filtré. il s'agit de la
+	     * différence entre les entrée pour lequelles les comptes
+	     * cpS sont recepteurs et celle dont les comptes cpS sont emetteurs
+	     * */
+	    $dql1='SELECT SUM(e.pr) as sol '.
+		'FROM ClemLafComptesAppBundle:Comptes\Entree e '.
+		'LEFT JOIN e.category c '.
+		'WHERE e.cpS in ('.($nom==null?'0':$nom).')'.
+		($fdes==null?'':' AND e.cpD in ('.$fdes.')').$dqlquery;
+	    $dql2='SELECT SUM(e.pr) as sol '.
+		'FROM ClemLafComptesAppBundle:Comptes\Entree e '.
+		'LEFT JOIN e.category c '.
+		'WHERE e.cpD in ('.($nom==null?'0':$nom).')'.
+		($fdes==null?'':' AND e.cpS in ('.$fdes.')').$dqlquery;
+	    $soldefiltre=$em->createQuery($dql1)
+		->setParameters($param)
+		->getSingleScalarResult()
+	       	-
+		$em->createQuery($dql2)
+		->setParameters($param)
+		->getSingleScalarResult();
 
 	    $soldes=array();
-	    $solde=0;
-	    foreach($entrees as $e){
-		if(count($soldes)==0){
-		    if(in_array($e->getCpS(),$dummy->getCpS()==null?array():$dummy->getCpS()))
-			$solde=0; //$this->getSolde($e->getCpS(),$e);
-		    else
-			$solde=0; //$this->getSolde($e->getCpD(),$e);
-		}else{
-		    if(in_array($e->getCpS(),$dummy->getCpS()==null?array():$dummy->getCpS()))
-			$solde=$solde+$e->getPr();
-		    else
-			$solde=$solde-$e->getPr();
+	    $solde=array();
+	    if($form->get('cpS')->getData()){
+		foreach($form->get('cpS')->getData() as $cp){
+		    $solde[$cp->getId()]=null;
 		}
-		$soldes[$e->getId()]=$solde;
+	    }
+	    $entree_point=$dummy;
+	    foreach($entrees as $e){
+		$e->reverse($form->get('cpS')->getData());
+		if(in_array($e->getCpS(),$form->get('cpS')->getData()==null?array():$form->get('cpS')->getData())){
+		    if($solde[$e->getCpS()->getId()]==null){
+			$solde[$e->getCpS()->getId()]=$em->getRepository('ClemLafComptesAppBundle:Comptes\Entree')->getSolde($e->getCpS(),$e);
+			$entree_point=$e;
+		    }
+		    else
+			$solde[$e->getCpS()->getId()]=$solde[$e->getCpS()->getId()]+$e->getPr();
+		    $soldes[$e->getId()]=$solde[$e->getCpS()->getId()];
+		}else{
+		    if($solde[$e->getCpD()->getId()]==null)
+			$solde[$e->getCpD()->getId()]=$em->getRepository('ClemLafComptesAppBundle:Comptes\Entree')->getSolde($e->getCpD(),$e);
+		    else
+			$solde[$e->getCpD()->getId()]=$solde[$e->getCpD()->getId()]-$e->getPr();
+		    $soldes[$e->getId()]=$solde[$e->getCpD()->getId()];
+		}
 	    }
 	    $soldes['new']=$soldefiltre;
 	    $newline=new Entree();
+	    $newline->setCpS($entree_point->getCpS());
 	    return $this->render('ClemLafComptesAppBundle:Comptes:table2.html.twig',
 		array('form' => $form->createView(),
 		'entrees' => $entrees,
 		'categories' => $ca_cl[1],
 		'moyens' => $mo_cl[1],
 		'comptes' => $cp_cl[1],
-		'cpid' => $dummy->getCpS(),
+		'cpid' => $form->get('cpS')->getData(),
 		'newline' => $newline,
 		'ord' => $ord,
 		'soldes'=> $soldes,
 		'test'=> $dqlcom,
-		'solp'=> 0 //$this->getSoldePointe($nom)/100
+		'solp'=> $em->getRepository('ClemLafComptesAppBundle:Comptes\Entree')->getSolde($entree_point->getCpS(),$entree_point,true)
 		)
 	    );
 	}
@@ -196,10 +235,19 @@ class MainController extends Controller
 	    $new->setPoD(false);
 	$em->persist($new);
 	$em->flush();
-	$solde=0; //$this->getSolde($new->getCpS(),$new);
-	$sp=0; //$this->getSoldePointe($new->getCpS());
-	$sf=$em->createQuery('SELECT SUM(e.pr) as sol FROM ClemLafComptesAppBundle:Comptes\Entree e WHERE e.cpS=:nom'.($fdes==null?'':' AND e.cpD=:des').$dqlquery)->setParameters($param)->getSingleScalarResult() -
-	    $em->createQuery('SELECT SUM(e.pr) as sol FROM ClemLafComptesAppBundle:Comptes\Entree e WHERE e.cpD=:nom'.($fdes==null?'':' AND e.cpS=:des').$dqlquery)->setParameters($param)->getSingleScalarResult();
+	$solde=$em->getRepository('ClemLafComptesAppBundle:Comptes\Entree')->getSolde($new->getCpS(),$new);
+	$sp=$em->getRepository('ClemLafComptesAppBundle:Comptes\Entree')->getSolde($new->getCpS(),$new,1);
+	$sf=$em->createQuery(
+	    'SELECT SUM(e.pr) as sol '.
+	    'FROM ClemLafComptesAppBundle:Comptes\Entree e '.
+	    'WHERE e.cpS=:nom'.($fdes==null?'':' AND e.cpD=:des').$dqlquery
+	)
+	->setParameters($param)->getSingleScalarResult() -
+	$em->createQuery(
+	    'SELECT SUM(e.pr) as sol '.
+	    'FROM ClemLafComptesAppBundle:Comptes\Entree e '.
+	    'WHERE e.cpD=:nom'.($fdes==null?'':' AND e.cpS=:des').$dqlquery
+	)->setParameters($param)->getSingleScalarResult();
 	//$sf=$nom.' '.$d1;
 	$resp = new Response($this->renderView('ClemLafComptesAppBundle:Comptes:update.xml.twig',
 	    array('entries' => array(array('id'=> $new->getId(), 'solde' => $solde/100)),

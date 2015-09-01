@@ -20,21 +20,6 @@ class Entree
     private $date;
 
     /**
-     * @var integer
-     */
-    private $cpS;
-
-    /**
-     * @var integer
-     */
-    private $cpD;
-
-    /**
-     * @var integer
-     */
-    private $moy;
-
-    /**
      * @var string
      */
     private $com;
@@ -91,75 +76,6 @@ class Entree
     public function getDate()
     {
         return $this->date;
-    }
-
-    /**
-     * Set cpS
-     *
-     * @param integer $cpS
-     * @return Entree
-     */
-    public function setCpS($cpS)
-    {
-        $this->cpS = $cpS;
-
-        return $this;
-    }
-
-    /**
-     * Get cpS
-     *
-     * @return integer 
-     */
-    public function getCpS()
-    {
-        return $this->cpS;
-    }
-
-    /**
-     * Set cpD
-     *
-     * @param integer $cpD
-     * @return Entree
-     */
-    public function setCpD($cpD)
-    {
-        $this->cpD = $cpD;
-
-        return $this;
-    }
-
-    /**
-     * Get cpD
-     *
-     * @return integer 
-     */
-    public function getCpD()
-    {
-        return $this->cpD;
-    }
-
-    /**
-     * Set moy
-     *
-     * @param integer $moy
-     * @return Entree
-     */
-    public function setMoy($moy)
-    {
-        $this->moy = $moy;
-
-        return $this;
-    }
-
-    /**
-     * Get moy
-     *
-     * @return integer 
-     */
-    public function getMoy()
-    {
-        return $this->moy;
     }
 
     /**
@@ -310,9 +226,12 @@ class Entree
      */
     public function reverse($cp_tab)
     {
-	if($cp_tab!=null){
+	if($cp_tab!=null && $this->cpD!=null){
 	    foreach($cp_tab as $cpid){
-		if( $this->cpD==$cpid && $this->cpS!=$cpid){
+		if($this->cpS->getId()==$cpid->getId())
+		    break;
+		if($this->cpD->getId()==$cpid->getId() &&
+		    $this->cpS->getId()!=$cpid->getId()){
 		    $this->cpD=$this->cpS;
 		    $this->cpS=$cpid;
 		    $potr=$this->poD;
@@ -323,5 +242,61 @@ class Entree
 		}
 	    }
 	}
+    }
+    /**
+     * @var \ClemLaf\ComptesAppBundle\Entity\Comptes\Compte
+     */
+    private $cpD;
+
+    /**
+     * @var \ClemLaf\ComptesAppBundle\Entity\Comptes\Compte
+     */
+    private $cpS;
+
+
+    /**
+     * Set cpD
+     *
+     * @param \ClemLaf\ComptesAppBundle\Entity\Comptes\Compte $cpD
+     * @return Entree
+     */
+    public function setCpD(\ClemLaf\ComptesAppBundle\Entity\Comptes\Compte $cpD = null)
+    {
+        $this->cpD = $cpD;
+
+        return $this;
+    }
+
+    /**
+     * Get cpD
+     *
+     * @return \ClemLaf\ComptesAppBundle\Entity\Comptes\Compte 
+     */
+    public function getCpD()
+    {
+        return $this->cpD;
+    }
+
+    /**
+     * Set cpS
+     *
+     * @param \ClemLaf\ComptesAppBundle\Entity\Comptes\Compte $cpS
+     * @return Entree
+     */
+    public function setCpS(\ClemLaf\ComptesAppBundle\Entity\Comptes\Compte $cpS = null)
+    {
+        $this->cpS = $cpS;
+
+        return $this;
+    }
+
+    /**
+     * Get cpS
+     *
+     * @return \ClemLaf\ComptesAppBundle\Entity\Comptes\Compte 
+     */
+    public function getCpS()
+    {
+        return $this->cpS;
     }
 }
