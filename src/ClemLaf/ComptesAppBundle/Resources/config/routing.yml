@@ -2,6 +2,10 @@ clemlaf_comptes_app_homepage:
     path:  /
     defaults: { _controller: ClemLafComptesAppBundle:Main:index }
 
+clemlaf_comptes_app_table:
+    path:  /get_table
+    defaults: { _controller: ClemLafComptesAppBundle:Main:get_table }
+
 clemlaf_comptes_app_update:
     path: /update
     defaults: { _controller: ClemLafComptesAppBundle:Main:update }

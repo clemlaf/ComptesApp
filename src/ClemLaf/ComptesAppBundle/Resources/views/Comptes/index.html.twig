@@ -10,33 +10,11 @@
 {% endblock %}
 {% block javascripts %}
   <script language="JavaScript" type="text/javascript" src="{{ asset('bundles/clemlafcomptesapp/js/calendar/datetimepicker_css.js') }}"></script>
-  <script language="JavaScript" type="text/javascript">
-   function change_signe(ii){
-     //alert("pr"+ii);
-     var iidd="pr"+ii;
-     var aa=document.getElementById(iidd).value;
-     if(parseFloat(aa)<0){
-       document.getElementById(iidd).value=aa.substr(1,aa.length);
-       $(document.getElementById(iidd)).css({"color" : "#00AA00"});
-     }else{
-       document.getElementById(iidd).value="-"+aa;
-       $(document.getElementById(iidd)).css({"color" : "#AA0000"});
-     }
-   }
-   function clearform(){
-     var aa=document.getElementById('entree');
-     var cells=aa.getElementsByTagName('select');
-     for(var i=0;i<cells.length;i++){
-       var so=cells[i].selectedOptions;
-       for(var j=0; j<so.length;j++){
-	 so[j].selected=false;
-       }
-     }
-   }
-  </script>
   <script type="text/javascript" src="{{ asset('bundles/clemlafcomptesapp/js/jquery.js') }}"></script>
   <script type="text/javascript" src="{{ asset('bundles/clemlafcomptesapp/js/jNotify.jquery.js')}}"></script>
   <script type="text/javascript" src="{{ asset('bundles/clemlafcomptesapp/js/update_ajax.js')}}"></script>
+  <script type="text/javascript" src="{{ asset('bundles/clemlafcomptesapp/js/utils.js')}}"></script>
+  <script type="text/javascript" src="{{ asset('bundles/clemlafcomptesapp/js/twig.min.js')}}"></script>
 {% endblock %}
 
 {% block body %}

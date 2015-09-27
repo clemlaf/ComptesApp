@@ -1,23 +1,23 @@
 function ajax(id)
 {
     var xhr=null;
-    
+
     if (window.XMLHttpRequest) { 
-        xhr = new XMLHttpRequest();
+	xhr = new XMLHttpRequest();
     }
     else if (window.ActiveXObject) 
     {
-        xhr = new ActiveXObject("Microsoft.XMLHTTP");
+	xhr = new ActiveXObject("Microsoft.XMLHTTP");
     }
-    
     ff=document.forms[0]
-    param='';
+	param='';
     sp='';
     top=false;
     for(var i=0;i<ff.elements.length;i++){
 	param=param+sp+ff.elements[i].id+'='+ff.elements[i].value;
 	sp='&';
     }
+
     //on affiche le message d'acceuil
     var nid=id.querySelectorAll("[name=id]")[0].value;
     console.log(nid);
@@ -32,30 +32,30 @@ function ajax(id)
     else
 	var pt=false;
     var moy=id.querySelectorAll("[name=moy]")[0].value;
-
-    //on dÃ©finit l'appel de la fonction au retour serveur
+    //on définit l'appel de la fonction au retour serveur
     if (nid=='new')
 	xhr.onreadystatechange = function() { after_ajout(xhr,ff.elements[3].value,top); };
     else
 	xhr.onreadystatechange = function() { alert_ajax(xhr); };
-    
+    //    alert("on tente l'appel suivant "+"update_ajax.php?id="+nid+"&cp_s="+cp_s+"&cp_d="+cp_d+"&cat="+cat+"&com="+com+"&pr="+pr+"&pt="+pt+"&moy="+moy)
+    //on appelle le fichier reponse.txt
     xhr.open("POST", "./update", true);
     //alert(com);
     xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhr.send(param+"&id="+nid+"&date="+date+"&cp_s="+cp_s+"&cp_d="+cp_d+"&cat="+cat+"&com="+com+"&pr="+pr+"&pt="+pt+"&moy="+moy);
 }
-    
+
 function supprime(id){
     var xhr=null;
     if (window.XMLHttpRequest) { 
-        xhr = new XMLHttpRequest();
+	xhr = new XMLHttpRequest();
     }
     else if (window.ActiveXObject) 
     {
-        xhr = new ActiveXObject("Microsoft.XMLHTTP");
+	xhr = new ActiveXObject("Microsoft.XMLHTTP");
     }
     ff=document.forms[0]
-    param='';
+	param='';
     sp='';
     top=false;
     for(var i=0;i<ff.elements.length;i++){
@@ -63,7 +63,7 @@ function supprime(id){
 	sp='&';
     }
 
-    //on dÃ©finit l'appel de la fonction au retour serveur
+    //on définit l'appel de la fonction au retour serveur
     xhr.onreadystatechange = function() { after_suppr(xhr,nid); };
     var nid=id.querySelectorAll("[name=id]")[0].value;
     xhr.open("POST", "./delete", true);
@@ -71,47 +71,47 @@ function supprime(id){
     xhr.send(param+"&id="+nid);
 }
 
-
 function clearline(id){
     id.querySelectorAll("[name=date]")[0].value=null;
-   // id.querySelectorAll("[name=cp_s]")[0].value=null;
+    // id.querySelectorAll("[name=cp_s]")[0].value=null;
     id.querySelectorAll("[name=cp_d]")[0].value=null;
     id.querySelectorAll("[name=cat]")[0].value=null;
     id.querySelectorAll("[name=com]")[0].value=null;
     id.querySelectorAll("[name=pr]")[0].value=null;
-//    var pt=id.querySelectorAll("[name=pt]")[0].checked;
+    //    var pt=id.querySelectorAll("[name=pt]")[0].checked;
     id.querySelectorAll("[name=moy]")[0].value=null;
+
 }
 
 function alert_ajax(xhr){
-    if (xhr.readyState==4) 
+    if (xhr.readystate==4) 
     {
-	entries=xhr.responseXML.documentElement.getElementsByTagName("entry")
-	for (var i=0;i<entries.length;i++){
-	    document.getElementById("so"+entries[i].getElementsByTagName("id")[0].firstChild.nodeValue).innerHTML=entries[i].getElementsByTagName("solde")[0].firstChild.nodeValue;
-	}
-	document.getElementById("soldepointe").innerHTML=xhr.responseXML.documentElement.getElementsByTagName("soldepointe")[0].firstChild.nodeValue;
-	document.getElementById("sonew").innerHTML=xhr.responseXML.documentElement.getElementsByTagName("soldefiltre")[0].firstChild.nodeValue;
+	entries=xhr.responsexml.documentelement.getelementsbytagname("entry")
+	    for (var i=0;i<entries.length;i++){
+		document.getelementbyid("so"+entries[i].getelementsbytagname("id")[0].firstchild.nodevalue).innerhtml=entries[i].getelementsbytagname("solde")[0].firstchild.nodevalue;
+	    }
+	document.getelementbyid("soldepointe").innerhtml=xhr.responsexml.documentelement.getelementsbytagname("soldepointe")[0].firstchild.nodevalue;
+	document.getelementbyid("sonew").innerhtml=xhr.responsexml.documentelement.getelementsbytagname("soldefiltre")[0].firstchild.nodevalue;
 	$(document).ready(function(){
 	    jSuccess(
-		'donnÃ©es mises Ã  jour',
-		{
-		    autoHide : true, // added in v2.0
-		    clickOverlay : false, // added in v2.0
-		    MinWidth : 250,
-		    TimeShown : 400,
-		    ShowTimeEffect : 100,
-		    HideTimeEffect : 100,
-		    LongTrip :00,
-		    HorizontalPosition : 'right',
-		    VerticalPosition : 'top',
-		    ShowOverlay : false,
-   		    ColorOverlay : '#000',
-		    OpacityOverlay : 0.3,
-		}
-	    );
+		    'données mises à jour',
+		    {
+				autoHide : true, // added in v2.0
+				clickOverlay : false, // added in v2.0
+				MinWidth : 250,
+				TimeShown : 400,
+				ShowTimeEffect : 100,
+				HideTimeEffect : 100,
+				LongTrip :00,
+				HorizontalPosition : 'right',
+				VerticalPosition : 'top',
+				ShowOverlay : false,
+				ColorOverlay : '#000',
+				OpacityOverlay : 0.3,
+		    }
+		    );
 	}
-			 );
+	);
     }
 }
 
@@ -126,35 +126,35 @@ function after_suppr(xhr,nid){
 	document.getElementById("soldepointe").innerHTML=xhr.responseXML.documentElement.getElementsByTagName('soldepointe')[0].firstChild.nodeValue;
 	document.getElementById("sonew").innerHTML=xhr.responseXML.documentElement.getElementsByTagName('soldefiltre')[0].firstChid.nodeValue;
 	$(document).ready(
-	    function(){
-		jSuccess(
-		    'enregistrement supprimÃ©',
-		    {
-			autoHide : true, // added in v2.0
-			clickOverlay : false, // added in v2.0
-			MinWidth : 250,
-			TimeShown : 400,
-			ShowTimeEffect : 100,
-			HideTimeEffect : 100,
-			LongTrip :00,
-			HorizontalPosition : 'right',
-			VerticalPosition : 'top',
-			ShowOverlay : false,
-   			ColorOverlay : '#000',
-			OpacityOverlay : 0.3,
-		    }
+		function(){
+		    jSuccess(
+			    'enregistrement supprimé',
+			    {
+				autoHide : true, // added in v2.0
+				clickOverlay : false, // added in v2.0
+				MinWidth : 250,
+				TimeShown : 400,
+				ShowTimeEffect : 100,
+				HideTimeEffect : 100,
+				LongTrip :00,
+				HorizontalPosition : 'right',
+				VerticalPosition : 'top',
+				ShowOverlay : false,
+				ColorOverlay : '#000',
+				OpacityOverlay : 0.3,
+			    }
+			    );
+		}
 		);
-	    }
-	);
     }
-    
+
 }
-    
-    function after_ajout(xhr,top,nb){
+
+function after_ajout(xhr,top,nb){
     if (xhr.readyState==4){
 	//var ff=document.getElementById("ff"+nid);
 	//for (var i=0;i<ff.length;i++){
-	 //   $(ff[i]).css( { "text-decoration" : "line-through"});
+	//   $(ff[i]).css( { "text-decoration" : "line-through"});
 	//}
 	var ff=document.getElementById("princ").lastChild;
 	var tot=ff.childNodes.length;
@@ -163,7 +163,7 @@ function after_suppr(xhr,nid){
 	    i++;
 	}
 	if(tot>nb){
-	$(ff.childNodes[top?tot-i-1:i]).css({"display" : "none"});
+	    $(ff.childNodes[top?tot-i-1:i]).css({"display" : "none"});
 	}
 	var ff=document.getElementById("rwnew");
 	var newtr=document.createElement("tr");
@@ -177,11 +177,11 @@ function after_suppr(xhr,nid){
 	newtr.innerHTML=ff.innerHTML;
 	ff.innerHTML=htmltext;
 	for(var i=0;i<newentry.childNodes.length;i++){
-	    
+
 	    aa=newentry.childNodes[i];
 	    if(aa.nodeName!="#text" && aa.firstChild!=null){
 		console.log("[name="+aa.tagName+"]")
-		ff.querySelectorAll("[name="+aa.nodeName+"]")[0].value=aa.firstChild.nodeValue;
+		    ff.querySelectorAll("[name="+aa.nodeName+"]")[0].value=aa.firstChild.nodeValue;
 	    }
 	}
 	if(top){
@@ -191,26 +191,27 @@ function after_suppr(xhr,nid){
 	}
 	//clearline(document.getElementById('rwnew'));
 	$(document).ready(
-	    function(){
-		jSuccess(
-		    'enregistrement ajoutÃ©',
-		    {
-			autoHide : true, // added in v2.0
-			clickOverlay : false, // added in v2.0
-			MinWidth : 250,
-			TimeShown : 400,
-			ShowTimeEffect : 100,
-			HideTimeEffect : 100,
-			LongTrip :00,
-			HorizontalPosition : 'right',
-			VerticalPosition : 'top',
-			ShowOverlay : false,
-   			ColorOverlay : '#000',
-			OpacityOverlay : 0.3,
-		    }
+		function(){
+		    jSuccess(
+			    'enregistrement ajouté',
+			    {
+				autoHide : true, // added in v2.0
+				clickOverlay : false, // added in v2.0
+				MinWidth : 250,
+				TimeShown : 400,
+				ShowTimeEffect : 100,
+				HideTimeEffect : 100,
+				LongTrip :00,
+				HorizontalPosition : 'right',
+				VerticalPosition : 'top',
+				ShowOverlay : false,
+				ColorOverlay : '#000',
+				OpacityOverlay : 0.3,
+			    }
+			    );
+		}
 		);
-	    }
-	);
     }
-    
+
 }
+

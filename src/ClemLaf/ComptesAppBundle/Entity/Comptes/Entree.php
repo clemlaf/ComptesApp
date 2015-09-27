@@ -299,4 +299,20 @@ class Entree
     {
         return $this->cpS;
     }
+    /**
+     * to Array
+     * */
+    public function toArray(){
+        return array(
+            'id'=>$this->id,
+            'date'=>($this->date?$this->date->format('d/m/Y'):null),
+            'cpS'=> ($this->cpS ?$this->cpS->getId():null),
+            'cpD'=> ($this->cpD ?$this->cpD->getId():null),
+            'category'=> ($this->category?$this->category->getId():null),
+            'moyen'=> ($this->moyen?$this->moyen->getId():null),
+            'com'=> $this->com,
+            'pr'=> $this->pr,
+            'poS'=> $this->poS
+        );
+    }
 }
