@@ -19,4 +19,10 @@ ClemLaf\ComptesAppBundle\Entity\Comptes\Compte:
         entriesS:
             targetEntity: Entree
             mappedBy: cpS
+        periodsD:
+            targetEntity: Periodic
+            mappedBy: cpD
+        periodsS:
+            targetEntity: Periodic
+            mappedBy: cpS
     lifecycleCallbacks: {  }

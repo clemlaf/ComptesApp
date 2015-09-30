@@ -16,7 +16,6 @@ ClemLaf\ComptesAppBundle\Entity\Comptes\Category:
         entries:
             targetEntity: Entree
             mappedBy: category
-    oneToMany:
         periodics:
             targetEntity: Periodic
             mappedBy: category

@@ -1,3 +1,8 @@
+{% if image %}
+<div style="text-align:center;width:100%;float:left;">
+  <img src="data:image/png;base64,{{ image }}">
+</div>
+{% else %}
 <table border=1 id="princ" style="overflow:hidden" width="100%">
     <th>index</th><th>Date</th><th>Compte source</th><th>Compte destination</th><th>Moyen</th><th>Catégorie</th><th>Commentaire</th><th>Prix</th><th></th><th>Solde</th>
   {% if ord %}
@@ -6,11 +11,13 @@
     {'style':'','comptes':comptes,'moyens':moyens,'tab':newline,'categories':categories, 'tabid':'new', 'soldes':soldes
     }%}
   {% endif %}
+  {% set cnt=1 %}
   {% for tab in entrees %}
     {% include
     'line.html.twig' with
-    {'style':cycle(['paire','impaire'],tab.id),'comptes':comptes,'moyens':moyens,'tab':tab,'categories':categories, 'tabid':tab.id, 'soldes':soldes
+    {'style':cycle(['paire','impaire'],cnt),'comptes':comptes,'moyens':moyens,'tab':tab,'categories':categories, 'tabid':tab.id, 'soldes':soldes
     }%}
+    {% set cnt=1-cnt %}
   {% endfor %}
   {% if not ord %}
     {% include
@@ -22,3 +29,4 @@
     <td id="soldepointe">{{ solp }}</td>
   </tr>
 </table>
+{% endif %}

@@ -21,21 +21,31 @@ ClemLaf\ComptesAppBundle\Entity\Comptes\Periodic:
         com:
             type: string
             length: 255
-        cpS:
-            type: integer
-            column: cp_s
-        cpD:
-            type: integer
-            column: cp_d
-        moy:
-            type: integer
         prix:
             type: integer
     manyToOne:
+        cpD:
+            targetEntity: Compte
+            inversedBy: periodsD
+            joinColumn:
+                name: cp_d
+                referencedColumnName: id
+        cpS:
+            targetEntity: Compte
+            inversedBy: periodsS
+            joinColumn:
+                name: cp_s
+                referencedColumnName: id
         category:
             targetEntity: Category
             inversedBy: periodics
             joinColumn:
                  name: cat
                  referencedColumnName: id        
+        moyen:
+            targetEntity: Moyen
+            inversedBy: periodics
+            joinColumn:
+                name: moy
+                referencedColumnName: id
     lifecycleCallbacks: {  }

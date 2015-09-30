@@ -97,4 +97,42 @@ class Category
     {
         return $this->entries;
     }
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $periodics;
+
+
+    /**
+     * Add periodics
+     *
+     * @param \ClemLaf\ComptesAppBundle\Entity\Comptes\Periodic $periodics
+     * @return Category
+     */
+    public function addPeriodic(\ClemLaf\ComptesAppBundle\Entity\Comptes\Periodic $periodics)
+    {
+        $this->periodics[] = $periodics;
+
+        return $this;
+    }
+
+    /**
+     * Remove periodics
+     *
+     * @param \ClemLaf\ComptesAppBundle\Entity\Comptes\Periodic $periodics
+     */
+    public function removePeriodic(\ClemLaf\ComptesAppBundle\Entity\Comptes\Periodic $periodics)
+    {
+        $this->periodics->removeElement($periodics);
+    }
+
+    /**
+     * Get periodics
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getPeriodics()
+    {
+        return $this->periodics;
+    }
 }

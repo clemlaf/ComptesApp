@@ -1,7 +1,6 @@
 <?php
 namespace ClemLaf\ComptesAppBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Response;
 use Xlab\pChartBundle\pData;
 use Xlab\pChartBundle\pDraw;
 use Xlab\pChartBundle\pImage;
@@ -10,12 +9,10 @@ use Xlab\pChartBundle\pPie;
 
 class GraphController extends Controller
 {
-    public function graphAction($type, $querystr, $param, $cpsarray){
+    public function graph($type, $querystr, $param, $cpsarray, $fdes){
 	/*On prépare la requête à la base de données et la
 	 * response à la requête http*/	
 	$em=$this->getDoctrine()->getManager();
-	$response=new Response();
-	$response->headers->set('Content-Type', 'image/png');
 	$myData = new pData();
 	$myPicture=new pImage(700,500,$myData);
 	/* Draw the background */
@@ -30,6 +27,8 @@ class GraphController extends Controller
 	$query=$em->createQuery('SELECT e '.
 	    'FROM ClemLafComptesAppBundle:Comptes\Entree e '.
 	    'LEFT JOIN e.category c '.
+	    'WHERE ((e.cpS IN (:nom)'.($fdes==null?'':' AND e.cpD IN (:des)').') '.
+	    'OR (e.cpD IN(:nom)'.($fdes==null?'':' AND e.cpS IN(:des)').'))'.
 	    $querystr)
 	    ->setParameters($param);
 	/* la requête est commune aux deux premiers types de graphes*/
@@ -38,7 +37,7 @@ class GraphController extends Controller
 	case 'solde':
 	    $entrees=$query->getResult();
 	    if(count($entrees)==0)
-		return $response;
+		return null;
 	    $d1='';
 	    $d2='';
 	    $last=0;
@@ -116,7 +115,7 @@ class GraphController extends Controller
 	case 'rev_dep':
 	    $entrees=$query->getResult();
 	    if(count($entrees)==0)
-		return $response;
+		return null;
 	    $d1='';
 	    $d2='';
 	    $ld='';
@@ -191,8 +190,10 @@ class GraphController extends Controller
 	     * nécessaires */
 	    $somcat=$em->createQuery('SELECT c.cNam, SUM(e.pr) as sol '.
 		'FROM ClemLafComptesAppBundle:Comptes\Entree e '.
-		'JOIN e.category c'
-		.str_replace('ORDER',' GROUP BY c.id ORDER',$querystr))
+		'JOIN e.category c '.
+		'WHERE ((e.cpS IN (:nom)'.($fdes==null?'':' AND e.cpD IN (:des)').') '.
+		'OR (e.cpD IN(:nom)'.($fdes==null?'':' AND e.cpS IN(:des)').'))'.
+		str_replace('ORDER',' GROUP BY c.id ORDER',$querystr))
 		->setParameters($param)
 		->getResult();
 	    /*Pour chaque catégorie on remplit les séries*/
@@ -214,8 +215,7 @@ class GraphController extends Controller
 	ob_start();//le contenu est envoyé dans un buffer
 	/* Render the picture (choose the best way) */
 	$myPicture->autoOutput();
-	$response->setContent(base64_encode(ob_get_clean()));//le contenu du buffer est vidé dans le contenu de la "response"
-	return $response;
+	return base64_encode(ob_get_clean());//le contenu du buffer est vidé dans le contenu de la "response"
     }
 
 }

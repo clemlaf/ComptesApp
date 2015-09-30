@@ -9,5 +9,8 @@ var template = twig({
 		//
 		 load:function(template){ update_table(template); } 
 });
-
+var ff=document.forms[0];
+for(var i=0; i<ff.elements.length;i++){
+    ff.elements[i].onchange=function(){update_table(null); };
+}
 

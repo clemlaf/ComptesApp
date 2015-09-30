@@ -42,27 +42,27 @@ class Periodic
     /**
      * @var integer
      */
-    private $cpS;
+    private $prix;
 
     /**
-     * @var integer
+     * @var \ClemLaf\ComptesAppBundle\Entity\Comptes\Compte
      */
     private $cpD;
 
     /**
-     * @var integer
+     * @var \ClemLaf\ComptesAppBundle\Entity\Comptes\Compte
      */
-    private $moy;
-
-    /**
-     * @var integer
-     */
-    private $prix;
+    private $cpS;
 
     /**
      * @var \ClemLaf\ComptesAppBundle\Entity\Comptes\Category
      */
     private $category;
+
+    /**
+     * @var \ClemLaf\ComptesAppBundle\Entity\Comptes\Moyen
+     */
+    private $moyen;
 
 
     /**
@@ -191,75 +191,6 @@ class Periodic
     }
 
     /**
-     * Set cpS
-     *
-     * @param integer $cpS
-     * @return Periodic
-     */
-    public function setCpS($cpS)
-    {
-        $this->cpS = $cpS;
-
-        return $this;
-    }
-
-    /**
-     * Get cpS
-     *
-     * @return integer 
-     */
-    public function getCpS()
-    {
-        return $this->cpS;
-    }
-
-    /**
-     * Set cpD
-     *
-     * @param integer $cpD
-     * @return Periodic
-     */
-    public function setCpD($cpD)
-    {
-        $this->cpD = $cpD;
-
-        return $this;
-    }
-
-    /**
-     * Get cpD
-     *
-     * @return integer 
-     */
-    public function getCpD()
-    {
-        return $this->cpD;
-    }
-
-    /**
-     * Set moy
-     *
-     * @param integer $moy
-     * @return Periodic
-     */
-    public function setMoy($moy)
-    {
-        $this->moy = $moy;
-
-        return $this;
-    }
-
-    /**
-     * Get moy
-     *
-     * @return integer 
-     */
-    public function getMoy()
-    {
-        return $this->moy;
-    }
-
-    /**
      * Set prix
      *
      * @param integer $prix
@@ -283,6 +214,52 @@ class Periodic
     }
 
     /**
+     * Set cpD
+     *
+     * @param \ClemLaf\ComptesAppBundle\Entity\Comptes\Compte $cpD
+     * @return Periodic
+     */
+    public function setCpD(\ClemLaf\ComptesAppBundle\Entity\Comptes\Compte $cpD = null)
+    {
+        $this->cpD = $cpD;
+
+        return $this;
+    }
+
+    /**
+     * Get cpD
+     *
+     * @return \ClemLaf\ComptesAppBundle\Entity\Comptes\Compte 
+     */
+    public function getCpD()
+    {
+        return $this->cpD;
+    }
+
+    /**
+     * Set cpS
+     *
+     * @param \ClemLaf\ComptesAppBundle\Entity\Comptes\Compte $cpS
+     * @return Periodic
+     */
+    public function setCpS(\ClemLaf\ComptesAppBundle\Entity\Comptes\Compte $cpS = null)
+    {
+        $this->cpS = $cpS;
+
+        return $this;
+    }
+
+    /**
+     * Get cpS
+     *
+     * @return \ClemLaf\ComptesAppBundle\Entity\Comptes\Compte 
+     */
+    public function getCpS()
+    {
+        return $this->cpS;
+    }
+
+    /**
      * Set category
      *
      * @param \ClemLaf\ComptesAppBundle\Entity\Comptes\Category $category
@@ -303,5 +280,28 @@ class Periodic
     public function getCategory()
     {
         return $this->category;
+    }
+
+    /**
+     * Set moyen
+     *
+     * @param \ClemLaf\ComptesAppBundle\Entity\Comptes\Moyen $moyen
+     * @return Periodic
+     */
+    public function setMoyen(\ClemLaf\ComptesAppBundle\Entity\Comptes\Moyen $moyen = null)
+    {
+        $this->moyen = $moyen;
+
+        return $this;
+    }
+
+    /**
+     * Get moyen
+     *
+     * @return \ClemLaf\ComptesAppBundle\Entity\Comptes\Moyen 
+     */
+    public function getMoyen()
+    {
+        return $this->moyen;
     }
 }

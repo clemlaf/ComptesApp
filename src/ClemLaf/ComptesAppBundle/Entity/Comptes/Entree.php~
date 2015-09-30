@@ -226,9 +226,12 @@ class Entree
      */
     public function reverse($cp_tab)
     {
-	if($cp_tab!=null){
+	if($cp_tab!=null && $this->cpD!=null){
 	    foreach($cp_tab as $cpid){
-		if( $this->cpD==$cpid->get && $this->cpS!=$cpid){
+		if($this->cpS->getId()==$cpid->getId())
+		    break;
+		if($this->cpD->getId()==$cpid->getId() &&
+		    $this->cpS->getId()!=$cpid->getId()){
 		    $this->cpD=$this->cpS;
 		    $this->cpS=$cpid;
 		    $potr=$this->poD;
@@ -239,5 +242,77 @@ class Entree
 		}
 	    }
 	}
+    }
+    /**
+     * @var \ClemLaf\ComptesAppBundle\Entity\Comptes\Compte
+     */
+    private $cpD;
+
+    /**
+     * @var \ClemLaf\ComptesAppBundle\Entity\Comptes\Compte
+     */
+    private $cpS;
+
+
+    /**
+     * Set cpD
+     *
+     * @param \ClemLaf\ComptesAppBundle\Entity\Comptes\Compte $cpD
+     * @return Entree
+     */
+    public function setCpD(\ClemLaf\ComptesAppBundle\Entity\Comptes\Compte $cpD = null)
+    {
+        $this->cpD = $cpD;
+
+        return $this;
+    }
+
+    /**
+     * Get cpD
+     *
+     * @return \ClemLaf\ComptesAppBundle\Entity\Comptes\Compte 
+     */
+    public function getCpD()
+    {
+        return $this->cpD;
+    }
+
+    /**
+     * Set cpS
+     *
+     * @param \ClemLaf\ComptesAppBundle\Entity\Comptes\Compte $cpS
+     * @return Entree
+     */
+    public function setCpS(\ClemLaf\ComptesAppBundle\Entity\Comptes\Compte $cpS = null)
+    {
+        $this->cpS = $cpS;
+
+        return $this;
+    }
+
+    /**
+     * Get cpS
+     *
+     * @return \ClemLaf\ComptesAppBundle\Entity\Comptes\Compte 
+     */
+    public function getCpS()
+    {
+        return $this->cpS;
+    }
+    /**
+     * to Array
+     * */
+    public function toArray(){
+        return array(
+            'id'=>$this->id,
+            'date'=>($this->date?$this->date->format('d/m/Y'):null),
+            'cpS'=> ($this->cpS ?$this->cpS->getId():null),
+            'cpD'=> ($this->cpD ?$this->cpD->getId():null),
+            'category'=> ($this->category?$this->category->getId():null),
+            'moyen'=> ($this->moyen?$this->moyen->getId():null),
+            'com'=> $this->com,
+            'pr'=> $this->pr,
+            'poS'=> $this->poS
+        );
     }
 }

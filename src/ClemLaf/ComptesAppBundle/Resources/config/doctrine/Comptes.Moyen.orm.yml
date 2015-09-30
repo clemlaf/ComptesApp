@@ -16,4 +16,7 @@ ClemLaf\ComptesAppBundle\Entity\Comptes\Moyen:
         entries:
             targetEntity: Entree
             mappedBy: moyen
+        periodics:
+            targetEntity: Periodic
+            mappedBy: moyen
     lifecycleCallbacks: {  }

@@ -25,12 +25,12 @@ clemlaf_comptes_app_delparam:
 
 clemlaf_comptes_app_period:
     path: /period
-    defaults: { _controller: ClemLafComptesAppBundle:Param:period }
+    defaults: { _controller: ClemLafComptesAppBundle:Period:index }
 
 clemlaf_comptes_app_update_period:
-    path: /update_period
-    defaults: { _controller: ClemLafComptesAppBundle:Param:update_period }
+    path: /period/update
+    defaults: { _controller: ClemLafComptesAppBundle:Period:update }
 
 clemlaf_comptes_app_delete_period:
-    path: /delete_period
-    defaults: { _controller: ClemLafComptesAppBundle:Param:delete_period }
+    path: /period/delete
+    defaults: { _controller: ClemLafComptesAppBundle:Period:delete }

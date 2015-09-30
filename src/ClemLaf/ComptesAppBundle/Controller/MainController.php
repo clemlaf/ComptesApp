@@ -2,6 +2,7 @@
 namespace ClemLaf\ComptesAppBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use ClemLaf\ComptesAppBundle\Entity\Comptes\Entree;
+use ClemLaf\ComptesAppBundle\Entity\Comptes\Periodic;
 use Symfony\Component\HttpFoundation\Request;
 use ClemLaf\ComptesAppBundle\Form\Type\EntreeType;
 use Symfony\Component\HttpFoundation\Response;
@@ -34,187 +35,62 @@ class MainController extends Controller
 
     public function indexAction(Request $request)
     {
+	$logger = $this->get('logger');
 	/*gestion du formulaire*/
-	$em=$this->getDoctrine()->getManager();
-	$comptes=$em->getRepository('ClemLafComptesAppBundle:Comptes\Compte')->findAll();
-	$categories=$em->getRepository('ClemLafComptesAppBundle:Comptes\Category')->findAll();
-	$moyens=$em->getRepository('ClemLafComptesAppBundle:Comptes\Moyen')->findAll();
-	$cp_cl=MainController::getChoicesList($comptes,'Compte');
-	$ca_cl=MainController::getChoicesList($categories,'Category');
-	$mo_cl=MainController::getChoicesList($moyens,'Moyen');
-	/* on cree une entree qui sert de base au formulaire de choix de l'affichage
-	 * par exemple on choisit les dates qui nous intéressent ainsi
-	 * que le compte ou la catégorie*/
-	$dummy= new Entree();
-	$form=$this->createForm(new EntreeType(array(
-	    'cpchoices' => $cp_cl[0], 'catchoices' => $ca_cl[0], 'moychoices' => $mo_cl[0]
-	)),
-	$dummy);
-	$form->handleRequest($request);
-
-	if($form->isValid()){
-
-	}elseif(!$form->isSubmitted()){
-	    $form->get('deb')->setData(0);
-	    $form->get('nb')->setData(15);
-	    $form->get('type')->setData('table');
-	}
-
-	$type=$form->get('type')->getData();
-	$nom_tmp=array();
-	if($form->get('cpS')->getData()==null){
-	    $nom=null;
-	}else{
-	    foreach($form->get('cpS')->getData() as $tmp){
-		$nom_tmp[]=$tmp->getId();
-	    } 
-	    $nom=implode(',',$nom_tmp);
-	}
-	$d1=$form->get('date1')->getData();
-	$d2=$form->get('date2')->getData(); //'3000-01-01';
-	if($d1==''){
-	    $d1='2000-01-01';//valeur par défaut pour la date de début
-	}
-	if($d2==''){
-	    $d2='3000-01-01';//valeur par défaut pour la date de fin
-	}
-	$fcat=$dummy->getCategory()==null?null:$dummy->getCategory()->getId();
-	$fmoy=$dummy->getMoyen()==null?null:$dummy->getMoyen()->getId();//on ne peut choisir qu'un moyen
-	$nom_tmp=array();
-	if($form->get('cpD')->getData()==null){
-	    $fdes=null;
-	}else{
-	    foreach($form->get('cpD')->getData() as $tmp){
-		$nom_tmp[]=$tmp->getId();
-	    }
-	    $fdes=implode(',',$nom_tmp);
-	}
-	$rcom=$dummy->getCom();
-	$ord=false;
-	$deb=$form->get('deb')->getData();
-	$nbr=$form->get('nb')->getData();
-
-	/* a partir des données issues du formulaire, on créé la requête
-	 * principale, qui sert à récuperer les données qu'on souhaite afficher
-	 * dans la base de données.*/
-	$dqlcom=' WHERE ((e.cpS IN('.($nom==null?'9999':$nom).')'.($fdes==null?'':' AND e.cpD IN('.$fdes.')').') OR (e.cpD IN('.($nom==null?'9999':$nom).')'.($fdes==null?'':' AND e.cpS IN('.$fdes.')').'))';
-	$dqlquery=' AND e.date >= :d1 AND e.date <= :d2';
-	$dqlquery=$dqlquery.($fcat==null?'':' AND c.id IN('.$fcat.')');
-	$dqlquery=$dqlquery.($rcom==null?'':' AND e.com LIKE :com');
-	$dqlquery=$dqlquery.($fmoy==null?'':' AND e.moy='.$fmoy);
-	$dqlquery=$dqlquery.' ORDER BY e.date '.($ord?'DESC':'ASC');
-	$param=array(
-	    //'nom' => $nom,
-	    'd1' => $d1,
-	    'd2' => $d2,
-	);
-	$param=($rcom==''?$param:array_merge($param,array('com'=> $rcom)));
+	$params=$this->getParam($request);
 	//$param=($fdes==null?$param:array_merge($param,array('des'=> $fdes)));
 	//fin de la gestion du formlaire
-	/* Enfin à partir du type de format des données qu'on a choisi,
-	 * on génére un tableau ou un graphe. */
-	if($type!='table'){
-	    return $this->render('ClemLafComptesAppBundle:Comptes:graph.html.twig',
-		array('form' => $form->createView(),
-		'type'=> $type,
-		'cpid' => $form->get('cpS')->getData(),
-		'test'=> $dqlcom.''.$dqlquery,
-		'param'=> $param,)
-	    );
-
-	}else{
-	    /*gestion de la table*/
-	    /*requete pour obtenir le nombre total d'entrée
-	     * correspodant aux critères*/
-	    $dql='SELECT COUNT(e) '.
-		'FROM ClemLafComptesAppBundle:Comptes\Entree e '.
-		'LEFT JOIN e.category c '.$dqlcom.''.$dqlquery;
-	    $nbtot=$em->createQuery($dql)->setParameters($param)->getSingleScalarResult();
-	    /*requete pour obtenir le nb d'entrée qu'on souhaite 
-	     * afficher.*/
-	    $dql='SELECT e '.
-		'FROM ClemLafComptesAppBundle:Comptes\Entree e '.
-		'LEFT JOIN e.category c '.$dqlcom.''.$dqlquery;
-	    $query=$em->createQuery($dql)
-		->setParameters($param)
-		->setFirstResult($ord?$deb*$nbr:max($nbtot-($deb+1)*$nbr,0))
-		->setMaxResults($nbr);
-	    $entrees=$query->getResult();
-	    /*requetes pour obtenir le solde filtré. il s'agit de la
-	     * différence entre les entrée pour lequelles les comptes
-	     * cpS sont recepteurs et celle dont les comptes cpS sont emetteurs
-	     * */
-	    $dql1='SELECT SUM(e.pr) as sol '.
-		'FROM ClemLafComptesAppBundle:Comptes\Entree e '.
-		'LEFT JOIN e.category c '.
-		'WHERE e.cpS in ('.($nom==null?'0':$nom).')'.
-		($fdes==null?'':' AND e.cpD in ('.$fdes.')').$dqlquery;
-	    $dql2='SELECT SUM(e.pr) as sol '.
-		'FROM ClemLafComptesAppBundle:Comptes\Entree e '.
-		'LEFT JOIN e.category c '.
-		'WHERE e.cpD in ('.($nom==null?'0':$nom).')'.
-		($fdes==null?'':' AND e.cpS in ('.$fdes.')').$dqlquery;
-	    $soldefiltre=$em->createQuery($dql1)
-		->setParameters($param)
-		->getSingleScalarResult()
-	       	-
-		$em->createQuery($dql2)
-		->setParameters($param)
-		->getSingleScalarResult();
-
-	    $soldes=array();
-	    $solde=array();
-	    if($form->get('cpS')->getData()){
-		foreach($form->get('cpS')->getData() as $cp){
-		    $solde[$cp->getId()]=null;
+	//Il faut ajouter les dernières opérations périodiques.
+	$em=$this->getDoctrine()->getManager();
+	$periods=$em->getRepository('ClemLafComptesAppBundle:Comptes\Periodic')->findAll();
+	foreach($periods as $p){
+	    $tod=new \DateTime();
+	    if($tod < $p->getEndDate()){
+		$firstdate=$p->getLastDate();
+		$newdate=new \DateTime($firstdate->format('Y-m-d'));
+		$lastdate=new \DateTime($newdate->format('Y-m-d'));
+		$newdate->add(new \DateInterval('P'.$p->getMois().'M'.$p->getJours().'D'));
+		//$logger->info($lastdate->format('d/m/Y').' to '.$newdate->format('d/m/Y'));
+		while($tod > $newdate){
+		    $newent=new Entree();
+		    $newent->setDate($newdate);
+		    $newent->setCpS($p->getCpS());
+		    $newent->setCpD($p->getCpD());
+		    $newent->setCategory($p->getCategory());
+		    $newent->setMoyen($p->getMoyen());
+		    $newent->setCom($p->getCom());
+		    $newent->setPr($p->getPrix());
+		    $newent->setPoS(false);
+		    $newent->setPoD(false);
+		    $em->persist($newent);
+		    //$em->flush();
+		    $lastdate=new \DateTime($newdate->format('Y-m-d'));
+		    $newdate->add(new \DateInterval('P'.$p->getMois().'M'.$p->getJours().'D'));
 		}
+		$p->setLastDate($lastdate);
 	    }
-	    $entree_point=$dummy;
-	    foreach($entrees as $e){
-		$e->reverse($form->get('cpS')->getData());
-		if(in_array($e->getCpS(),$form->get('cpS')->getData()==null?array():$form->get('cpS')->getData())){
-		    if($solde[$e->getCpS()->getId()]==null){
-			$solde[$e->getCpS()->getId()]=$em->getRepository('ClemLafComptesAppBundle:Comptes\Entree')->getSolde($e->getCpS(),$e);
-			$entree_point=$e;
-		    }
-		    else
-			$solde[$e->getCpS()->getId()]=$solde[$e->getCpS()->getId()]+$e->getPr();
-		    $soldes[$e->getId()]=$solde[$e->getCpS()->getId()];
-		}else{
-		    if($solde[$e->getCpD()->getId()]==null)
-			$solde[$e->getCpD()->getId()]=$em->getRepository('ClemLafComptesAppBundle:Comptes\Entree')->getSolde($e->getCpD(),$e);
-		    else
-			$solde[$e->getCpD()->getId()]=$solde[$e->getCpD()->getId()]-$e->getPr();
-		    $soldes[$e->getId()]=$solde[$e->getCpD()->getId()];
-		}
-	    }
-	    $soldes['new']=$soldefiltre;
-	    $newline=new Entree();
-	    $newline->setCpS($entree_point->getCpS());
-	    return $this->render('ClemLafComptesAppBundle:Comptes:table3.html.twig',
-		array('form' => $form->createView(),
-		'entrees' => $entrees,
-		'categories' => $ca_cl[1],
-		'moyens' => $mo_cl[1],
-		'comptes' => $cp_cl[1],
-		'cpid' => $form->get('cpS')->getData(),
-		'newline' => $newline,
-		'ord' => $ord,
-		'soldes'=> $soldes,
-		'test'=> $dqlcom,
-		'solp'=> $em->getRepository('ClemLafComptesAppBundle:Comptes\Entree')->getSolde($entree_point->getCpS(),$entree_point,true)
-		)
-	    );
 	}
+	$em->flush();
+
+	return $this->render('ClemLafComptesAppBundle:Comptes:table3.html.twig',
+	    array('form' => $params['form']->createView(),
+	    )
+	);
     }
     public function get_tableAction(Request $request){
 	$params=$this->getParam($request);
 	$response = new JsonResponse();
-	$response->setData($this->createTable($params));	    
+	if($params['type']!='table'){
+	    $data=array('image' => GraphController::graph($params['type'],
+		$params['query'],$params['param'],$params['cpS'],$params['des']));
+	}
+	else
+	    $data=$this->createTable($params);
+	$response->setData($data);	    
 	return $response;
     }
 
-    private function createTable($params){
+    private function createTable($params, $spec_entree=null){
 	$param=$params['param'];
 	$fdes=$params['des'];
 	$dqlquery=$params['query'];
@@ -274,9 +150,13 @@ class MainController extends Controller
 	    }
 	}
 	$entree_point=$params['dummy'];
+	$found_spec=false;
 	foreach($entrees as $e){
 	    $e->reverse($params['cpS']);
-	    $tab_entrees[]=$e->toArray();
+	    $tmp=$e->toArray();
+	    $tmp['spec']=($spec_entree && $e->getId()==$spec_entree->getId());
+	    $found_spec=$found_spec || $tmp['spec'];
+	    $tab_entrees[]=$tmp;
 	    if(in_array($e->getCpS(),$params['cpS']==null?array():$params['cpS'])){
 		if($solde[$e->getCpS()->getId()]==null){
 		    $solde[$e->getCpS()->getId()]=$em->getRepository('ClemLafComptesAppBundle:Comptes\Entree')->getSolde($e->getCpS(),$e);
@@ -293,6 +173,12 @@ class MainController extends Controller
 		$soldes[$e->getId()]=$solde[$e->getCpD()->getId()];
 	    }
 	}
+	if(!$found_spec && $spec_entree){
+	    $tmp=$spec_entree->toArray();
+	    $tmp['spec']=true;
+	    array_shift($tab_entrees);
+	    $tab_entrees[]=$tmp;
+	}
 	$soldes['new']=$soldefiltre;
 	$newline=new Entree();
 	return array('entrees' => $tab_entrees,
@@ -307,21 +193,23 @@ class MainController extends Controller
     }
 
     public function updateAction(Request $request){
-	$params=$this->getParam($request);
-	$param=$params['param'];
-	$fdes=$params['des'];
-	$dqlquery=$params['query'];
 
 	$em=$this->getDoctrine()->getManager();
 	$id=$request->request->get('id');
 	if ($id!=null  && $id!='new'){
 	    $new= $em->getRepository('ClemLafComptesAppBundle:Comptes\Entree')->find($id);
-	    if($new->getCpD()==$request->request->get('cp_s') or $new->getCpS()==$request->request->get('cp_d'))
-		$new->reverse($new->getCpD());
+	    if($request->request->get('cp_s')==($new->getCpD()?$new->getCpD()->getId():null) or $new->getCpS()->getId()==$request->request->get('cp_d'))
+		$new->reverse(array($new->getCpD()));
 	}else
 	    $new= new Entree();
-	$new->setCpS($em->getRepository('ClemLafComptesAppBundle:Comptes\Compte')->find(intval($request->request->get('cp_s'))));//parseint
-	$new->setCpD($em->getRepository('ClemLafComptesAppBundle:Comptes\Compte')->find(intval($request->request->get('cp_d'))));//parseint
+	$new->setCpS(
+		$em->getRepository('ClemLafComptesAppBundle:Comptes\Compte')
+		->find(intval($request->request->get('cp_s')))
+		);//parseint
+	$new->setCpD(
+		$em->getRepository('ClemLafComptesAppBundle:Comptes\Compte')
+		->find(intval($request->request->get('cp_d')))
+		);//parseint
 	$dadate=date_create_from_format('d/m/Y',$request->request->get('date'));
 	$new->setDate($dadate);//parsedate yyyy-mm-dd
 	$new->setCategory($em->getRepository('ClemLafComptesAppBundle:Comptes\Category')->find(intval($request->request->get('cat'))));//parseint
@@ -333,54 +221,22 @@ class MainController extends Controller
 	    $new->setPoD(false);
 	$em->persist($new);
 	$em->flush();
-	$solde=$em->getRepository('ClemLafComptesAppBundle:Comptes\Entree')->getSolde($new->getCpS(),$new);
-	$sp=$em->getRepository('ClemLafComptesAppBundle:Comptes\Entree')->getSolde($new->getCpS(),$new,1);
-	$sf=$em->createQuery(
-	    'SELECT SUM(e.pr) as sol '.
-	    'FROM ClemLafComptesAppBundle:Comptes\Entree e '.
-	    'WHERE e.cpS=:nom'.($fdes==null?'':' AND e.cpD=:des').$dqlquery
-	)
-	->setParameters($param)->getSingleScalarResult() -
-	$em->createQuery(
-	    'SELECT SUM(e.pr) as sol '.
-	    'FROM ClemLafComptesAppBundle:Comptes\Entree e '.
-	    'WHERE e.cpD=:nom'.($fdes==null?'':' AND e.cpS=:des').$dqlquery
-	)->setParameters($param)->getSingleScalarResult();
-	//$sf=$nom.' '.$d1;
-	$resp = new Response($this->renderView('ClemLafComptesAppBundle:Comptes:update.xml.twig',
-	    array('entries' => array(array('id'=> $new->getId(), 'solde' => $solde/100)),
-	    'type' => $id=='new'?'create':'update',
-	    'soldepointe'=>$sp/100,
-	    'soldefiltre'=>$sf/100,
-	    'tab'=>$new,
-	)
-    ),200,array('Content-type' => 'text/xml'));
-	return $resp;
+	$params=$this->getParam($request);
+	$response = new JsonResponse();
+	$response->setData($this->createTable($params,$new));	    
+	return $response;
     }
 
     public function deleteAction(Request $request){
-	$params=$this->getParam($request);
-	$param=$params['param'];
-	$dqlquery=$params['query'];
-	$fdes=$params['des'];
 	$em=$this->getDoctrine()->getManager();
 	$id=$request->request->get('id');
 	$del=$em->getRepository('ClemLafComptesAppBundle:Comptes\Entree')->find($id);
 	$em->remove($del);
 	$em->flush();
-	$sp=0; //$this->getSoldePointe($del->getCpS());
-
-	$sf=$em->createQuery('SELECT SUM(e.pr) as sol FROM ClemLafComptesAppBundle:Comptes\Entree e WHERE e.cpS=:nom'.($fdes==null?'':' AND e.cpD=:des').$dqlquery)->setParameters($param)->getSingleScalarResult() -
-	    $em->createQuery('SELECT SUM(e.pr) as sol FROM ClemLafComptesAppBundle:Comptes\Entree e WHERE e.cpD=:nom'.($fdes==null?'':' AND e.cpS=:des').$dqlquery)->setParameters($param)->getSingleScalarResult();
-	$resp = new Response($this->renderView('ClemLafComptesAppBundle:Comptes:update.xml.twig',
-	    array('entries'=>array(),
-	    'type' => 'delete',
-	    'soldepointe'=>$sp/100,
-	    'soldefiltre'=>$sf/100,
-	    'tab'=>$del,
-	)
-    ),200,array('Content-type' => 'text/xml'));
-	return $resp;
+	$params=$this->getParam($request);
+	$response = new JsonResponse();
+	$response->setData($this->createTable($params));	    
+	return $response;
     }
 
     function getParam(Request $request){
@@ -441,39 +297,6 @@ class MainController extends Controller
 	$deb=$form->get('deb')->getData();
 	$nbr=$form->get('nb')->getData();
 
-	/*$nom_tmp=array();
-	if($request->request->get('entree_cpS')->getData()==null){
-	    $nom=null;
-	}else{
-	    foreach($request->request->get('entree_cpS')->getData() as $tmp){
-		$nom_tmp[]=$tmp->getId();
-	    } 
-	    $nom=implode(',',$nom_tmp);
-	}
-	//$nom=$request->request->get('entree_cpS');
-	$d1=$request->request->get('entree_date1');
-	$d2=$request->request->get('entree_date2'); //'3000-01-01';
-	if($d1==''){
-	    $d1='2000-01-01';
-	}
-	if($d2==''){
-	    $d2='3000-01-01';
-	}
-	$fcat=$request->request->get('entree_cat');
-	$fmoy=$request->request->get('entree_moy');
-	$nom_tmp=array();
-	if($request->request->get('cpD')->getData()==null){
-	    $fdes=null;
-	}else{
-	    foreach($request->request->get('cpD')->getData() as $tmp){
-		$nom_tmp[]=$tmp->getId();
-	    }
-	    $fdes=implode(',',$nom_tmp);
-	}
-	//$fdes=$request->request->get('entree_cpD');
-	$rcom=$request->request->get('entree_com');
-	$ord=false;
-	 */
 	$dqlquery=' AND e.date >= :d1 AND e.date <= :d2';
 	$dqlquery=$dqlquery.($fcat==''?'':' AND e.category='.$fcat);
 	$dqlquery=$dqlquery.($rcom==''?'':' AND e.com LIKE :com');
@@ -498,7 +321,10 @@ class MainController extends Controller
 	    'cpcl'=>$cp_cl[1],
 	    'cacl'=>$ca_cl[1],
 	    'mocl'=>$mo_cl[1],
-	    'dummy'=> $dummy);
+	    'dummy'=> $dummy,
+	    'form'=> $form,
+	    'type'=> $type,
+    	);
     }
 
 

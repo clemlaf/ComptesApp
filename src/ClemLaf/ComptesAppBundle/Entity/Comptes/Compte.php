@@ -173,4 +173,80 @@ class Compte
     {
         return $this->entriesS;
     }
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $periodsD;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $periodsS;
+
+
+    /**
+     * Add periodsD
+     *
+     * @param \ClemLaf\ComptesAppBundle\Entity\Comptes\Periodic $periodsD
+     * @return Compte
+     */
+    public function addPeriodsD(\ClemLaf\ComptesAppBundle\Entity\Comptes\Periodic $periodsD)
+    {
+        $this->periodsD[] = $periodsD;
+
+        return $this;
+    }
+
+    /**
+     * Remove periodsD
+     *
+     * @param \ClemLaf\ComptesAppBundle\Entity\Comptes\Periodic $periodsD
+     */
+    public function removePeriodsD(\ClemLaf\ComptesAppBundle\Entity\Comptes\Periodic $periodsD)
+    {
+        $this->periodsD->removeElement($periodsD);
+    }
+
+    /**
+     * Get periodsD
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getPeriodsD()
+    {
+        return $this->periodsD;
+    }
+
+    /**
+     * Add periodsS
+     *
+     * @param \ClemLaf\ComptesAppBundle\Entity\Comptes\Periodic $periodsS
+     * @return Compte
+     */
+    public function addPeriodsS(\ClemLaf\ComptesAppBundle\Entity\Comptes\Periodic $periodsS)
+    {
+        $this->periodsS[] = $periodsS;
+
+        return $this;
+    }
+
+    /**
+     * Remove periodsS
+     *
+     * @param \ClemLaf\ComptesAppBundle\Entity\Comptes\Periodic $periodsS
+     */
+    public function removePeriodsS(\ClemLaf\ComptesAppBundle\Entity\Comptes\Periodic $periodsS)
+    {
+        $this->periodsS->removeElement($periodsS);
+    }
+
+    /**
+     * Get periodsS
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getPeriodsS()
+    {
+        return $this->periodsS;
+    }
 }

@@ -81,59 +81,5 @@ class ParamController extends Controller{
     //rediriger vers la page index
     return $this->redirect($this->generateURL('clemlaf_comptes_app_param'));
   }
-
-  public function periodAction(Request $request){
-    $em=$this->getDoctrine()->getManager();
-    $comptes=$em->createQuery('SELECT c.id, c.cpNam as name FROM ClemLafComptesAppBundle:Comptes\Compte c')->getResult();
-    $categories=$em->createQuery('SELECT c.id, c.cNam as name FROM ClemLafComptesAppBundle:Comptes\Category c ORDER BY c.cNam ASC')->getResult();
-    $moyens=$em->createQuery('SELECT m.id, m.mNam as name FROM ClemLafComptesAppBundle:Comptes\Moyen m')->getResult();
-    $dum_perio=new Periodic();
-    $form=$this->createForm(new PeriodicType(array(
-						   'cpchoices' => MainController::getChoicesList($comptes), 'catchoices' => MainController::getChoicesList($categories), 'moychoices' => MainController::getChoicesList($moyens)
-						 )),
-			    $dum_perio);
-    $form->handleRequest($request);
-    if($form->isValid()){
-      $em->persist($dum_perio);
-      $em->flush();
-    }
-    $periods=$em->getRepository('ClemLafComptesAppBundle:Comptes\Periodic')->findAll();
-    return $this->render('ClemLafComptesAppBundle:Comptes:tab_perio.html.twig',
-			 array('periodics'=> $periods,
-			       'categories'=>$categories,
-			       'moyens'=>$moyens,
-			       'comptes'=>$comptes,
-			       'form'=>$form->createView(),
-			       )
-			 );
-  }
-
-  public function update_periodAction(Request $request){
-    $em=$this->getDoctrine()->getManager();
-    $id=$request->request->get('id');
-    $new=$em->getRepository('ClemLafComptesAppBundle:Comptes\Periodic')->find($id);
-    $dadate=date_create_from_format('d/m/Y',$request->request->get('last_date'));
-    $new->setLastDate($request->request->get($dadate));
-    $dadate=date_create_from_format('d/m/Y',$request->request->get('end_date'));
-    $new->setEndDate($request->request->get($dadate));
-    $new->setCpS(intval($request->request->get('cp_s')));//parseint
-    $new->setCpD(intval($request->request->get('cp_d')));//parseint
-    $new->setCategory($em->getRepository('ClemLafComptesAppBundle:Comptes\Category')->find(intval($request->request->get('cat'))));//parseint
-    $new->setCom($request->request->get('com'));//texte
-    $new->setMoy(intval($request->request->get('moy')));//parseint
-    $new->setPr(intval(floatval($request->request->get('pr'))*100));
-    $em->persist($new);
-    $em->flush();
-    return 'ok';
-  }
-
-  public function delete_periodAction(Request $request){
-    $em=$this->getDoctrine()->getManager();
-    $id=$request->request->get('id');
-    $del=$em->getRepository('ClemLafComptesAppBundle:Comptes\Periodic')->find($id);
-    $em->remove($del);
-    $em->flush();
-    return 'ok';
-  }
 }
 ?>

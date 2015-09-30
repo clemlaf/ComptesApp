@@ -9,14 +9,6 @@ function ajax(id)
     {
 	xhr = new ActiveXObject("Microsoft.XMLHTTP");
     }
-    ff=document.forms[0]
-	param='';
-    sp='';
-    top=false;
-    for(var i=0;i<ff.elements.length;i++){
-	param=param+sp+ff.elements[i].id+'='+ff.elements[i].value;
-	sp='&';
-    }
 
     //on affiche le message d'acceuil
     var nid=id.querySelectorAll("[name=id]")[0].value;
@@ -34,15 +26,15 @@ function ajax(id)
     var moy=id.querySelectorAll("[name=moy]")[0].value;
     //on définit l'appel de la fonction au retour serveur
     if (nid=='new')
-	xhr.onreadystatechange = function() { after_ajout(xhr,ff.elements[3].value,top); };
+	xhr.onreadystatechange = function() { after_ajout(xhr,ff.elements[3].value);load_table(xhr); };
     else
-	xhr.onreadystatechange = function() { alert_ajax(xhr); };
+	xhr.onreadystatechange = function() { alert_ajax(xhr);load_table(xhr); };
     //    alert("on tente l'appel suivant "+"update_ajax.php?id="+nid+"&cp_s="+cp_s+"&cp_d="+cp_d+"&cat="+cat+"&com="+com+"&pr="+pr+"&pt="+pt+"&moy="+moy)
     //on appelle le fichier reponse.txt
     xhr.open("POST", "./update", true);
     //alert(com);
     xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhr.send(param+"&id="+nid+"&date="+date+"&cp_s="+cp_s+"&cp_d="+cp_d+"&cat="+cat+"&com="+com+"&pr="+pr+"&pt="+pt+"&moy="+moy);
+    xhr.send(get_param()+"&id="+nid+"&date="+date+"&cp_s="+cp_s+"&cp_d="+cp_d+"&cat="+cat+"&com="+com+"&pr="+pr+"&pt="+pt+"&moy="+moy);
 }
 
 function supprime(id){
@@ -54,109 +46,42 @@ function supprime(id){
     {
 	xhr = new ActiveXObject("Microsoft.XMLHTTP");
     }
-    ff=document.forms[0]
-	param='';
-    sp='';
-    top=false;
-    for(var i=0;i<ff.elements.length;i++){
-	param=param+sp+ff.elements[i].id+'='+ff.elements[i].value;
-	sp='&';
-    }
 
     //on définit l'appel de la fonction au retour serveur
-    xhr.onreadystatechange = function() { after_suppr(xhr,nid); };
+    xhr.onreadystatechange = function() { after_suppr(xhr,nid);load_table(xhr); };
     var nid=id.querySelectorAll("[name=id]")[0].value;
     xhr.open("POST", "./delete", true);
     xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhr.send(param+"&id="+nid);
-}
-
-function clearline(id){
-    id.querySelectorAll("[name=date]")[0].value=null;
-    // id.querySelectorAll("[name=cp_s]")[0].value=null;
-    id.querySelectorAll("[name=cp_d]")[0].value=null;
-    id.querySelectorAll("[name=cat]")[0].value=null;
-    id.querySelectorAll("[name=com]")[0].value=null;
-    id.querySelectorAll("[name=pr]")[0].value=null;
-    //    var pt=id.querySelectorAll("[name=pt]")[0].checked;
-    id.querySelectorAll("[name=moy]")[0].value=null;
-
+    xhr.send(get_param()+"&id="+nid);
 }
 
 function alert_ajax(xhr){
     if (xhr.readystate==4) 
     {
-	entries=xhr.responsexml.documentelement.getelementsbytagname("entry")
-	    for (var i=0;i<entries.length;i++){
-		document.getelementbyid("so"+entries[i].getelementsbytagname("id")[0].firstchild.nodevalue).innerhtml=entries[i].getelementsbytagname("solde")[0].firstchild.nodevalue;
-	    }
-	document.getelementbyid("soldepointe").innerhtml=xhr.responsexml.documentelement.getelementsbytagname("soldepointe")[0].firstchild.nodevalue;
-	document.getelementbyid("sonew").innerhtml=xhr.responsexml.documentelement.getelementsbytagname("soldefiltre")[0].firstchild.nodevalue;
-	$(document).ready(function(){
-	    jSuccess(
-		    'données mises à jour',
-		    {
-				autoHide : true, // added in v2.0
-				clickOverlay : false, // added in v2.0
-				MinWidth : 250,
-				TimeShown : 400,
-				ShowTimeEffect : 100,
-				HideTimeEffect : 100,
-				LongTrip :00,
-				HorizontalPosition : 'right',
-				VerticalPosition : 'top',
-				ShowOverlay : false,
-				ColorOverlay : '#000',
-				OpacityOverlay : 0.3,
-		    }
-		    );
-	}
-	);
+	/*document.getelementbyid("soldepointe").innerhtml=xhr.responsexml.documentelement.getelementsbytagname("soldepointe")[0].firstchild.nodevalue;
+	document.getelementbyid("sonew").innerhtml=xhr.responsexml.documentelement.getelementsbytagname("soldefiltre")[0].firstchild.nodevalue;*/
+	show_msg('données mises à jour');
     }
 }
 
 function after_suppr(xhr,nid){
     if (xhr.readyState==4){
-	//var ff=document.getElementById("ff"+nid);
-	//for (var i=0;i<ff.length;i++){
-	//   $(ff[i]).css( { "text-decoration" : "line-through"});
-	//}
-	var ff=document.getElementById("rw"+nid);
+	/*var ff=document.getElementById("rw"+nid);
 	$(ff).css({"display" : "none"});
 	document.getElementById("soldepointe").innerHTML=xhr.responseXML.documentElement.getElementsByTagName('soldepointe')[0].firstChild.nodeValue;
-	document.getElementById("sonew").innerHTML=xhr.responseXML.documentElement.getElementsByTagName('soldefiltre')[0].firstChid.nodeValue;
-	$(document).ready(
-		function(){
-		    jSuccess(
-			    'enregistrement supprimé',
-			    {
-				autoHide : true, // added in v2.0
-				clickOverlay : false, // added in v2.0
-				MinWidth : 250,
-				TimeShown : 400,
-				ShowTimeEffect : 100,
-				HideTimeEffect : 100,
-				LongTrip :00,
-				HorizontalPosition : 'right',
-				VerticalPosition : 'top',
-				ShowOverlay : false,
-				ColorOverlay : '#000',
-				OpacityOverlay : 0.3,
-			    }
-			    );
-		}
-		);
+	document.getElementById("sonew").innerHTML=xhr.responseXML.documentElement.getElementsByTagName('soldefiltre')[0].firstChid.nodeValue;*/
+	show_msg('enregistrement supprimé');
     }
 
 }
 
-function after_ajout(xhr,top,nb){
+function after_ajout(xhr,top=false,nb){
     if (xhr.readyState==4){
 	//var ff=document.getElementById("ff"+nid);
 	//for (var i=0;i<ff.length;i++){
 	//   $(ff[i]).css( { "text-decoration" : "line-through"});
 	//}
-	var ff=document.getElementById("princ").lastChild;
+	/*var ff=document.getElementById("princ").lastChild;
 	var tot=ff.childNodes.length;
 	var i=0;
 	while(i<tot && (typeof ff.childNodes[top?tot-i-1:i].id == "undefined" || ff.childNodes[top?tot-i-1:i].id.indexOf("rw")<0 || ff.childNodes[top?tot-i-1:i].style['display']=='none')){
@@ -188,29 +113,9 @@ function after_ajout(xhr,top,nb){
 	    ff.parentNode.insertBefore(newtr,ff.nextSibling);}
 	else{
 	    ff.parentNode.insertBefore(newtr,ff);
-	}
+	}*/
 	//clearline(document.getElementById('rwnew'));
-	$(document).ready(
-		function(){
-		    jSuccess(
-			    'enregistrement ajouté',
-			    {
-				autoHide : true, // added in v2.0
-				clickOverlay : false, // added in v2.0
-				MinWidth : 250,
-				TimeShown : 400,
-				ShowTimeEffect : 100,
-				HideTimeEffect : 100,
-				LongTrip :00,
-				HorizontalPosition : 'right',
-				VerticalPosition : 'top',
-				ShowOverlay : false,
-				ColorOverlay : '#000',
-				OpacityOverlay : 0.3,
-			    }
-			    );
-		}
-		);
+	show_msg('enregistrement ajouté');
     }
 
 }

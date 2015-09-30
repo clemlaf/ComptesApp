@@ -1,18 +1,18 @@
-{% extends 'TestTestAppBundle:Test:base.html.twig' %}
-{% form_theme form 'TestTestAppBundle:Form:period.html.twig' %}
+{% extends 'ClemLafComptesAppBundle:Comptes:base.html.twig' %}
 
 {% block title %}
   Opération Périodiques
 {% endblock %}
 {% block stylesheets %}
-  <LINK rel="stylesheet" href="{{ asset('bundles/testtestapp/css/mon_style.css') }}" type="text/css">
-  <link rel="stylesheet" href="{{ asset('bundles/testtestapp/css/jNotify.jquery.css') }}" type="text/css" />
+  <LINK rel="stylesheet" href="{{ asset('bundles/clemlafcomptesapp/css/mon_style.css') }}" type="text/css">
+  <link rel="stylesheet" href="{{ asset('bundles/clemlafcomptesapp/css/jNotify.jquery.css') }}" type="text/css" />
 {% endblock %}
 {% block javascripts %}
-  <script language="JavaScript" type="text/javascript" src="{{ asset('bundles/testtestapp/js/calendar/datetimepicker_css.js') }}"></script>
-  <script type="text/javascript" src="{{ asset('bundles/testtestapp/js/jquery.js') }}"></script>
-  <script type="text/javascript" src="{{ asset('bundles/testtestapp/js/jNotify.jquery.js')}}"></script>
-  <script type="text/javascript" src="{{ asset('bundles/testtestapp/js/period_ajax.js')}}"></script>
+  <script language="JavaScript" type="text/javascript" src="{{ asset('bundles/clemlafcomptesapp/js/calendar/datetimepicker_css.js') }}"></script>
+  <script type="text/javascript" src="{{ asset('bundles/clemlafcomptesapp/js/jquery.js') }}"></script>
+  <script type="text/javascript" src="{{ asset('bundles/clemlafcomptesapp/js/jNotify.jquery.js')}}"></script>
+  <script type="text/javascript" src="{{ asset('bundles/clemlafcomptesapp/js/utils.js')}}"></script>
+  <script type="text/javascript" src="{{ asset('bundles/clemlafcomptesapp/js/period_ajax.js')}}"></script>
 {% endblock %}
 {% block body %}
   <h1>Les opérations périodiques</h1>
@@ -32,14 +32,8 @@
       <th></th>
     </tr>
     {% for li in periodics %}
-      {{ include('TestTestAppBundle:Test:lin_perio.html.twig',{'comptes':comptes, 'moyens':moyens, 'categories':categories, 'li':li}) }}
+      {{ include('ClemLafComptesAppBundle:Comptes:lin_perio.html.twig',{'comptes':comptes, 'moyens':moyens, 'categories':categories, 'li':li, 'liid':li.id}) }}
     {% endfor %}
+      {{ include('ClemLafComptesAppBundle:Comptes:lin_perio.html.twig',{'comptes':comptes, 'moyens':moyens, 'categories':categories, 'li':newper, 'liid':'new'}) }}
   </table>
-    <div>
-   {{ form_start(form) }}
-      {% for frow in form.children %}
-	{{ form_row(frow) }}
-      {% endfor %}
-      {{ form_end(form) }}
-    </div>
 {% endblock %}

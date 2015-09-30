@@ -34,6 +34,7 @@ TH {border: groove; border-width: 1pt; background-color:#EEEEEE}
 
 .check { width:10px; height:10px}
 .paire  {background-color: #B9C8FF}
+.special  {background-color: #5DFF89}
 .impaire {background-color: #FFE3B9}
 .form_row {float:left;padding:3px;text-align:center;}
 #entree_nb {width:3em}

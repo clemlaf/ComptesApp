@@ -20,20 +20,24 @@ class PeriodicType extends AbstractType
       ->add('jours','integer',array('empty_data'=>null))
       ->add('cpS','choice',array(
 				       'choices' => $this->addopts['cpchoices'],
-				       'empty_value' => 'Choisir un compte',
+	    'choices_as_values' => true,
+				       'placeholder' => 'Choisir un compte',
 				       'empty_data' => null,
 				       ))
       ->add('cpD','choice',array(
 				 'choices' => $this->addopts['cpchoices'],
-				 'empty_value' => '---------',
+	    'choices_as_values' => true,
+				 'placeholder' => '---------',
 				 'empty_data' => null,
 				 ))
       ->add('category','choice', array('choices' => $this->addopts['catchoices'],
-				  'empty_value' => '-------',
+	    'choices_as_values' => true,
+				  'placeholder' => '-------',
 				  'empty_data' => null,
 				  ))
-      ->add('moy','choice', array('choices' => $this->addopts['moychoices'],
-				  'empty_value' => '---',
+      ->add('moyen','choice', array('choices' => $this->addopts['moychoices'],
+	    'choices_as_values' => true,
+				  'placeholder' => '---',
 				  'empty_data' => null,
 				  ))
       ->add('com','text',array('empty_data'=>null))
