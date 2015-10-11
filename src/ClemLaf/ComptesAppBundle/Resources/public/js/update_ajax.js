@@ -24,7 +24,7 @@ function ajax(id)
     else
 	var pt=false;
     var moy=id.querySelectorAll("[name=moy]")[0].value;
-    //on définit l'appel de la fonction au retour serveur
+    //on dÃ©finit l'appel de la fonction au retour serveur
     if (nid=='new')
 	xhr.onreadystatechange = function() { after_ajout(xhr,ff.elements[3].value);load_table(xhr); };
     else
@@ -47,7 +47,7 @@ function supprime(id){
 	xhr = new ActiveXObject("Microsoft.XMLHTTP");
     }
 
-    //on définit l'appel de la fonction au retour serveur
+    //on dÃ©finit l'appel de la fonction au retour serveur
     xhr.onreadystatechange = function() { after_suppr(xhr,nid);load_table(xhr); };
     var nid=id.querySelectorAll("[name=id]")[0].value;
     xhr.open("POST", "./delete", true);
@@ -60,7 +60,7 @@ function alert_ajax(xhr){
     {
 	/*document.getelementbyid("soldepointe").innerhtml=xhr.responsexml.documentelement.getelementsbytagname("soldepointe")[0].firstchild.nodevalue;
 	document.getelementbyid("sonew").innerhtml=xhr.responsexml.documentelement.getelementsbytagname("soldefiltre")[0].firstchild.nodevalue;*/
-	show_msg('données mises à jour');
+	show_msg('donnÃ©es mises Ã  jour');
     }
 }
 
@@ -70,7 +70,7 @@ function after_suppr(xhr,nid){
 	$(ff).css({"display" : "none"});
 	document.getElementById("soldepointe").innerHTML=xhr.responseXML.documentElement.getElementsByTagName('soldepointe')[0].firstChild.nodeValue;
 	document.getElementById("sonew").innerHTML=xhr.responseXML.documentElement.getElementsByTagName('soldefiltre')[0].firstChid.nodeValue;*/
-	show_msg('enregistrement supprimé');
+	show_msg('enregistrement supprimÃ©');
     }
 
 }
@@ -115,7 +115,7 @@ function after_ajout(xhr,top=false,nb){
 	    ff.parentNode.insertBefore(newtr,ff);
 	}*/
 	//clearline(document.getElementById('rwnew'));
-	show_msg('enregistrement ajouté');
+	show_msg('enregistrement ajoutÃ©');
     }
 
 }

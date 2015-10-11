@@ -3,7 +3,7 @@
 	<input name="id" type="text" value={{ tabid }} readonly size="3" style="Text-align:right">
 	<a id="{{ tabid }}"></a></td>
       <td>
-	<input name="date" type="text" id="dat{{ tabid }}" value="{{ tab.date }}" size=8 {% if tabid!='new' %}onChange="javascript:ajax(rw{{ tabid }});"{% endif %} ondblclick="javascript:NewCssCal('dat{{ tabid }}','ddMMyyyy', 'arrow');" autocomplete="off"></td>
+	<input name="date" type="text" id="dat{{ tabid }}" value="{{ tab.date }}" size=8 {% if tabid!='new' %}onChange="javascript:ajax(rw{{ tabid }});"{% endif %}  autocomplete="off"></td>
 	<td id="x{{ tabid }}">
 	  {% include
 	  'dodropbox.html.twig' with
@@ -41,8 +41,8 @@
 	  {% else %}
 	    <button onClick="javascript:ajax(rw{{ tabid }});" name="add">
 	  {% endif %}
-	      <img src="/bundles/clemlafcomptesapp/images/b_snewtbl.png"></button></td>
+	      <img src="../bundles/clemlafcomptesapp/images/b_snewtbl.png"></button></td>
 	  <td>
 	      <button onClick={% if tabid!='new' %}"javascript:supprime(rw{{ tabid }});"{% else %}"javascript:clearline(rw{{ tabid }});"{% endif %} name="supp" type="reset">
-	      <img src="/bundles/clemlafcomptesapp/images/b_drop.png"></button></td>
+	      <img src="../bundles/clemlafcomptesapp/images/b_drop.png"></button></td>
     </tr>    

@@ -1,0 +1,7 @@
+cp_s cp_d com prix e_date cat pt ptd moy   entries
+
+cat date cp_s cp_d moy com pr po_s po_d    entree
+
+SELECT ncat.id, e_date, ncps.id, ncpd.id, nmoy.id, com, prix, pt, ptd from comptes.entries as ent left join (comptes.categories as ocat inner join `comptes-sym`.category as ncat on ocat.c_nam=ncat.c_nam) on ent.cat=ocat.c_ind left join (comptes.moyen as omoy inner join `comptes-sym`.moyen as nmoy on omoy.m_nam=nmoy.m_nam) on ent.moy=omoy.m_ind left join (comptes.comptes as ocps inner join `comptes-sym`.compte as ncps on ocps.b_nam=ncps.cp_nam) on ent.cp_s=ocps.b_ind left join (comptes.comptes as ocpd inner join `comptes-sym`.compte as ncpd on ocpd.b_nam=ncpd.cp_nam) on ent.cp_d=ocpd.b_ind 
+
+

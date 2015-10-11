@@ -9,7 +9,7 @@ use Xlab\pChartBundle\pPie;
 
 class GraphController extends Controller
 {
-    public function graph($type, $querystr, $param, $cpsarray, $fdes){
+    public function graph($type, $querystr, $param, $cpsarray, $querystrp1,$querystrp2 ){
 	/*On prépare la requête à la base de données et la
 	 * response à la requête http*/	
 	$em=$this->getDoctrine()->getManager();
@@ -26,9 +26,6 @@ class GraphController extends Controller
 	$myPicture->setShadow(TRUE,array("X"=>1,"Y"=>1,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10));
 	$query=$em->createQuery('SELECT e '.
 	    'FROM ClemLafComptesAppBundle:Comptes\Entree e '.
-	    'LEFT JOIN e.category c '.
-	    'WHERE ((e.cpS IN (:nom)'.($fdes==null?'':' AND e.cpD IN (:des)').') '.
-	    'OR (e.cpD IN(:nom)'.($fdes==null?'':' AND e.cpS IN(:des)').'))'.
 	    $querystr)
 	    ->setParameters($param);
 	/* la requête est commune aux deux premiers types de graphes*/
@@ -188,18 +185,36 @@ class GraphController extends Controller
 	case 'pie':
 	    /* une requête spécifique permet de récupérer les données
 	     * nécessaires */
-	    $somcat=$em->createQuery('SELECT c.cNam, SUM(e.pr) as sol '.
+	    $dql1='SELECT c.id as cid, c.cNam, SUM(e.pr) as sol '.
 		'FROM ClemLafComptesAppBundle:Comptes\Entree e '.
 		'JOIN e.category c '.
-		'WHERE ((e.cpS IN (:nom)'.($fdes==null?'':' AND e.cpD IN (:des)').') '.
-		'OR (e.cpD IN(:nom)'.($fdes==null?'':' AND e.cpS IN(:des)').'))'.
-		str_replace('ORDER',' GROUP BY c.id ORDER',$querystr))
+		str_replace('ORDER',' GROUP BY c.id ORDER',$querystrp1);
+		//$params['sold_query1'];
+	    $dql2='SELECT c.id as cid, c.cNam, SUM(e.pr) as sol '.
+		'FROM ClemLafComptesAppBundle:Comptes\Entree e '.
+		'JOIN e.category c '.
+		str_replace('ORDER',' GROUP BY c.id ORDER',$querystrp2);
+		//$params['sold_query2'];
+	    $somcat1=$em->createQuery($dql1)
 		->setParameters($param)
 		->getResult();
+	    $somcat2=$em->createQuery($dql2)
+		->setParameters($param)
+		->getResult();
+	    $somcat=array();
+	    foreach($somcat1 as $s){
+		$somcat[$s['cid']]=array('nam'=> $s['cNam'], 'sol'=> $s['sol']);
+	    }
+	    foreach($somcat2 as $s){
+		if(array_key_exists($s['cid'],$somcat))
+		    $somcat[$s['cid']]['sol']=$somcat[$s['cid']]['sol']-$s['sol'];
+		$somcat[$s['cid']]=array('nam' => $s['cNam'], 'sol'=> -$s['sol']);
+	    }
+	    //asort($somcat);
 	    /*Pour chaque catégorie on remplit les séries*/
-	    foreach($somcat as $s){
+	    foreach($somcat as $c => $s){
 		if($s['sol']<0){
-		    $myData->addPoints($s['cNam'],"Labels");
+		    $myData->addPoints($s['nam'],"Labels");
 		    $myData->addPoints(($s['sol'] / 100),"somme");
 		}
 	    }

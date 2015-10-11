@@ -1,0 +1,6 @@
+app:
+    resource: "@AppBundle/Controller/"
+    type:     annotation
+clemlaf_comptes_app:
+    resource: "@ClemLafComptesAppBundle/Resources/config/routing.yml"
+    prefix:     /comptes

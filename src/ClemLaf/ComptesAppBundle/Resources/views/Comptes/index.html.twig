@@ -5,16 +5,22 @@
     Comptes
 {% endblock %}
 {% block stylesheets %}
-  <LINK rel="stylesheet" href="{{ asset('bundles/clemlafcomptesapp/css/mon_style.css') }}" type="text/css">
-  <link rel="stylesheet" href="{{ asset('bundles/clemlafcomptesapp/css/jNotify.jquery.css') }}" type="text/css" />
+{% stylesheets 'bundles/clemlafcomptesapp/css/*.css' filter='cssrewrite' %}
+  <link rel="stylesheet" href="{{ asset_url }}" type="text/css" />
+  {% endstylesheets %}
 {% endblock %}
 {% block javascripts %}
-  <script language="JavaScript" type="text/javascript" src="{{ asset('bundles/clemlafcomptesapp/js/calendar/datetimepicker_css.js') }}"></script>
-  <script type="text/javascript" src="{{ asset('bundles/clemlafcomptesapp/js/jquery.js') }}"></script>
-  <script type="text/javascript" src="{{ asset('bundles/clemlafcomptesapp/js/jNotify.jquery.js')}}"></script>
-  <script type="text/javascript" src="{{ asset('bundles/clemlafcomptesapp/js/update_ajax.js')}}"></script>
-  <script type="text/javascript" src="{{ asset('bundles/clemlafcomptesapp/js/utils.js')}}"></script>
-  <script type="text/javascript" src="{{ asset('bundles/clemlafcomptesapp/js/twig.min.js')}}"></script>
+{% javascripts 'bundles/clemlafcomptesapp/js/jquery.min.js'
+               'bundles/clemlafcomptesapp/js/jquery-ui.min.js'
+               'bundles/clemlafcomptesapp/js/datepicker-fr.js'
+               'bundles/clemlafcomptesapp/js/update_ajax.js'
+               'bundles/clemlafcomptesapp/js/utils.js'
+               'bundles/clemlafcomptesapp/js/notify*.js'
+               'bundles/clemlafcomptesapp/js/twig*.js'
+	       output='js/compiled/main.js'
+	       %}
+  <script type="text/javascript" src="{{ asset_url }}"></script>
+  {% endjavascripts %}
 {% endblock %}
 
 {% block body %}

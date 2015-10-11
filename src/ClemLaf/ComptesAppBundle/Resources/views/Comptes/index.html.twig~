@@ -25,8 +25,8 @@
    
    
   </script>
-  <script type="text/javascript" src="{{ asset('bundles/testtestapp/js/jquery.js') }}"></script>
-  <script type="text/javascript" src="{{ asset('bundles/testtestapp/js/jNotify.jquery.js')}}"></script>
+  <script type="text/javascript" src="{{ asset('bundles/testtestapp/js/jquery.min.js') }}"></script>
+  <script type="text/javascript" src="{{ asset('bundles/testtestapp/js/jquery.jnotify.min.js')}}"></script>
   <script type="text/javascript" src="{{ asset('bundles/testtestapp/js/update_ajax.js')}}"></script>
 {% endblock %}
 

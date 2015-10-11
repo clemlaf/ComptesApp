@@ -49,6 +49,7 @@ class EntreeType extends AbstractType
 	    'required' => false
 	))
 	->add('com','text',array('required'=> false))
+    ->add('point', 'text', array('label'=> 'pt','mapped' => false,'required' => false))
 	->add('type','choice', array('choices' => array('table'=> 'Tableau',
 	    'solde' => 'Évolution solde',
 	    'pie' => 'Camembert des dépenses',

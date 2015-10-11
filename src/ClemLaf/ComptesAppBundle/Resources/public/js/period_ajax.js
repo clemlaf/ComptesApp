@@ -25,17 +25,17 @@ function ajax(id)
     var pr=id.querySelectorAll("[name=pr]")[0].value;
     var moy=id.querySelectorAll("[name=moy]")[0].value;
 
-    data_array['id']=nid
-    data_array['last_date']=ldate
-    data_array['end_date']=edate
-    data_array['mois']=mois
-    data_array['jours']=jours
-    data_array['cp_s']=cp_s
-    data_array['cp_d']=cp_d
-    data_array['cat']=cat
-    data_array['com']=com
-    data_array['pr']=pr
-    data_array['moy']=moy
+    data_array['id']=nid;
+    data_array['last_date']=ldate;
+    data_array['end_date']=edate;
+    data_array['mois']=mois;
+    data_array['jours']=jours;
+    data_array['cp_s']=cp_s;
+    data_array['cp_d']=cp_d;
+    data_array['cat']=cat;
+    data_array['com']=com;
+    data_array['pr']=pr;
+    data_array['moy']=moy;
     //on définit l'appel de la fonction au retour serveur
     if (nid=='new'){
 	    xhr.onreadystatechange= function(){after_ajout(xhr,data_array);};}
@@ -68,7 +68,7 @@ function supprime(id){
 function alert_ajax(xhr){
     if (xhr.readyState==4) 
     {
-	show_msg( 'données mises à jour')
+	show_msg( 'données mises à jour');
     }
 }
 
@@ -89,7 +89,7 @@ function after_ajout(xhr, data_array){
 	}
 	ff.querySelectorAll("[name=id]")[0].value=newid;
     ff.parentNode.appendChild(newtr);
-	show_msg( 'enregistrement ajouté')
+	show_msg( 'enregistrement ajouté');
     }
 }
 
@@ -101,7 +101,7 @@ function after_suppr(xhr,nid){
 	//}
 	var ff=document.getElementById("rw"+nid);
 	$(ff).css({"display" : "none"});
-	show_msg( 'enregistrement supprimé')
+	show_msg( 'enregistrement supprimé');
     }
     
 }

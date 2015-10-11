@@ -3,10 +3,16 @@
   Paramètres
 {% endblock %}
 {% block stylesheets %}
-  <LINK rel="stylesheet" href="{{ asset('bundles/clemlafcomptesapp/css/mon_style.css') }}" type="text/css">
+{% stylesheets 'bundles/clemlafcomptesapp/css/mon_style.css' filter='cssrewrite' %}
+  <link rel="stylesheet" href="{{ asset_url }}" type="text/css" />
+  {% endstylesheets %}
 {% endblock %}
 {% block javascripts %}
-  <script language="Javascript" type="text/javascript" src="{{ asset('bundles/clemlafcomptesapp/js/param.js') }}"></script>
+{% javascripts 'bundles/clemlafcomptesapp/js/param.js'
+	       output='js/compiled/param.js'
+	       %}
+  <script type="text/javascript" src="{{ asset_url }}"></script>
+  {% endjavascripts %}
 {% endblock %}
 {% block body %}
   <h1>Paramètres des comptes</h1>

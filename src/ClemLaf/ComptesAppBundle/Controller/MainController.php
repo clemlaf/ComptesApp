@@ -53,7 +53,7 @@ class MainController extends Controller
 		//$logger->info($lastdate->format('d/m/Y').' to '.$newdate->format('d/m/Y'));
 		while($tod > $newdate){
 		    $newent=new Entree();
-		    $newent->setDate($newdate);
+		    $newent->setDate(new \DateTime($newdate->format('Y-m-d')));
 		    $newent->setCpS($p->getCpS());
 		    $newent->setCpD($p->getCpD());
 		    $newent->setCategory($p->getCategory());
@@ -82,7 +82,8 @@ class MainController extends Controller
 	$response = new JsonResponse();
 	if($params['type']!='table'){
 	    $data=array('image' => GraphController::graph($params['type'],
-		$params['query'],$params['param'],$params['cpS'],$params['des']));
+		$params['common_query'],$params['param'],$params['cpS'],
+		$params['sold_query1'],$params['sold_query2']));
 	}
 	else
 	    $data=$this->createTable($params);
@@ -92,8 +93,7 @@ class MainController extends Controller
 
     private function createTable($params, $spec_entree=null){
 	$param=$params['param'];
-	$fdes=$params['des'];
-	$dqlquery=$params['query'];
+	$comquery=$params['common_query'];
 	$lim=$params['lim'];
 	/*gestion de la table*/
 	/*requete pour obtenir le nombre total d'entrée
@@ -101,19 +101,13 @@ class MainController extends Controller
 	$em=$this->getDoctrine()->getManager();
 	$dql='SELECT COUNT(e) '.
 	    'FROM ClemLafComptesAppBundle:Comptes\Entree e '.
-	    'LEFT JOIN e.category c '.
-	    'WHERE ((e.cpS IN (:nom)'.($fdes==null?'':' AND e.cpD IN (:des)').') '.
-	    'OR (e.cpD IN(:nom)'.($fdes==null?'':' AND e.cpS IN(:des)').'))'.
-	    $dqlquery;
+	    $comquery;
 	$nbtot=$em->createQuery($dql)->setParameters($param)->getSingleScalarResult();
 	/*requete pour obtenir le nb d'entrée qu'on souhaite 
 	 * afficher.*/
 	$dql='SELECT e '.
 	    'FROM ClemLafComptesAppBundle:Comptes\Entree e '.
-	    'LEFT JOIN e.category c '.
-	    'WHERE ((e.cpS IN (:nom)'.($fdes==null?'':' AND e.cpD IN (:des)').') '.
-	    'OR (e.cpD IN(:nom)'.($fdes==null?'':' AND e.cpS IN(:des)').'))'.
-	    $dqlquery;
+	    $comquery;
 	$query=$em->createQuery($dql)
 	    ->setParameters($param)
 	    ->setFirstResult($lim['ord']?$lim['deb']*$lim['nbr']:max($nbtot-($lim['deb']+1)*$lim['nbr'],0))
@@ -125,14 +119,10 @@ class MainController extends Controller
 	 * */
 	$dql1='SELECT SUM(e.pr) as sol '.
 	    'FROM ClemLafComptesAppBundle:Comptes\Entree e '.
-	    'LEFT JOIN e.category c '.
-	    'WHERE e.cpS in (:nom)'.
-	    ($fdes==null?'':' AND e.cpD in (:des)').$dqlquery;
+	    $params['sold_query1'];
 	$dql2='SELECT SUM(e.pr) as sol '.
 	    'FROM ClemLafComptesAppBundle:Comptes\Entree e '.
-	    'LEFT JOIN e.category c '.
-	    'WHERE e.cpD in (:nom)'.
-	    ($fdes==null?'':' AND e.cpS in (:des)').$dqlquery;
+	    $params['sold_query2'];
 	$soldefiltre=$em->createQuery($dql1)
 	    ->setParameters($param)
 	    ->getSingleScalarResult()
@@ -149,7 +139,6 @@ class MainController extends Controller
 		$solde[$cp->getId()]=null;
 	    }
 	}
-	$entree_point=$params['dummy'];
 	$found_spec=false;
 	foreach($entrees as $e){
 	    $e->reverse($params['cpS']);
@@ -160,7 +149,6 @@ class MainController extends Controller
 	    if(in_array($e->getCpS(),$params['cpS']==null?array():$params['cpS'])){
 		if($solde[$e->getCpS()->getId()]==null){
 		    $solde[$e->getCpS()->getId()]=$em->getRepository('ClemLafComptesAppBundle:Comptes\Entree')->getSolde($e->getCpS(),$e);
-		    $entree_point=$e;
 		}
 		else
 		    $solde[$e->getCpS()->getId()]=$solde[$e->getCpS()->getId()]+$e->getPr();
@@ -180,14 +168,42 @@ class MainController extends Controller
 	    $tab_entrees[]=$tmp;
 	}
 	$soldes['new']=$soldefiltre;
+
+	$compte=reset($params['cpS']);
+	$soldepoint=0;
+	if(count($params['cpS'])==1){
+	    //$compte=reset($params['cpS']);
+	    $dql1='SELECT SUM(e.pr) as sol '.
+		'FROM ClemLafComptesAppBundle:Comptes\Entree e '.
+		'WHERE e.cpS=:compte AND e.poS=true';
+	    $dql2='SELECT SUM(e.pr) as sol '.
+		'FROM ClemLafComptesAppBundle:Comptes\Entree e '.
+		'WHERE e.cpD=:compte AND e.poD=true';
+	    $parpoint=array('compte'=>$compte);
+	    $soldepoint=$em->createQuery($dql1)
+		->setParameters($parpoint)
+		->getSingleScalarResult()
+		-
+		$em->createQuery($dql2)
+		->setParameters($parpoint)
+		->getSingleScalarResult();
+	}
+
+	$comptenew=$compte;
+	if($spec_entree)
+		$comptenew=$spec_entree->getCps();
 	$newline=new Entree();
+	if($comptenew)
+		$newline->setCpS($comptenew);
 	return array('entrees' => $tab_entrees,
 	    'soldes' => $soldes,
+	    'solp' => $soldepoint/100,
 	    'ord' => $lim['ord'],
 	    'newline' => $newline->toArray(),
 	    'comptes' => $params['cpcl'],
 	    'categories' => $params['cacl'],
 	    'moyens' => $params['mocl'],
+	    'param'=> $params['param'],
 	);
 
     }
@@ -215,7 +231,10 @@ class MainController extends Controller
 	$new->setCategory($em->getRepository('ClemLafComptesAppBundle:Comptes\Category')->find(intval($request->request->get('cat'))));//parseint
 	$new->setCom($request->request->get('com'));//texte
 	$new->setMoyen($em->getRepository('ClemLafComptesAppBundle:Comptes\Moyen')->find(intval($request->request->get('moy'))));//parseint
-	$new->setPr(intval(floatval($request->request->get('pr'))*100));//parsefloat ? gestion , ou .
+	$new->setPr(intval(floatval(
+		str_replace(',','.',$request->request->get('pr'))
+		)*100
+	));//parsefloat ? gestion , ou .
 	$new->setPoS($request->request->get('pt')=='true');
 	if ($id == null || $id=='new')
 	    $new->setPoD(false);
@@ -242,9 +261,9 @@ class MainController extends Controller
     function getParam(Request $request){
 	/*gestion du formulaire*/
 	$em=$this->getDoctrine()->getManager();
-	$comptes=$em->getRepository('ClemLafComptesAppBundle:Comptes\Compte')->findAll();
-	$categories=$em->getRepository('ClemLafComptesAppBundle:Comptes\Category')->findAll();
-	$moyens=$em->getRepository('ClemLafComptesAppBundle:Comptes\Moyen')->findAll();
+	$comptes=$em->getRepository('ClemLafComptesAppBundle:Comptes\Compte')->findBy(array(),array('cpNam'=> 'ASC'));
+	$categories=$em->getRepository('ClemLafComptesAppBundle:Comptes\Category')->findBy(array(),array('cNam'=> 'ASC'));
+	$moyens=$em->getRepository('ClemLafComptesAppBundle:Comptes\Moyen')->findBy(array(),array('mNam'=> 'ASC'));
 	$cp_cl=MainController::getChoicesList($comptes,'Compte');
 	$ca_cl=MainController::getChoicesList($categories,'Category');
 	$mo_cl=MainController::getChoicesList($moyens,'Moyen');
@@ -261,12 +280,13 @@ class MainController extends Controller
 	    $form->get('deb')->setData(0);
 	    $form->get('nb')->setData(15);
 	    $form->get('type')->setData('table');
+	    $form->get('point')->setData('_');
 	}
 
 	$type=$form->get('type')->getData();
 	$nom_tmp=array();
 	if($form->get('cpS')->getData()==null){
-	    $nom=null;
+	    $nom='9999';
 	}else{
 	    foreach($form->get('cpS')->getData() as $tmp){
 		$nom_tmp[]=$tmp->getId();
@@ -293,29 +313,44 @@ class MainController extends Controller
 	    $fdes=implode(',',$nom_tmp);
 	}
 	$rcom=$dummy->getCom();
+	$fpoi=$form->get('point')->getData();
 	$ord=false;
 	$deb=$form->get('deb')->getData();
 	$nbr=$form->get('nb')->getData();
 
+	$startdql='WHERE ((e.cpS IN ('.$nom.')'.
+	    ($fpoi=='_'?'':' AND e.poS='.($fpoi=='x'?'true':'false')).
+	    ($fdes==null?'':' AND e.cpD IN ('.$fdes.')').') '.
+	    'OR (e.cpD IN('.$nom.')'.
+	    ($fpoi=='_'?'':' AND e.poD='.($fpoi=='x'?'true':'false')).
+	    ($fdes==null?'':' AND e.cpS IN('.$fdes.')').'))';
+	$solddql1= 'WHERE e.cpS in ('.$nom.')'.
+	    ($fpoi=='_'?'':' AND e.poS='.($fpoi=='x'?'true':'false')).
+	    ($fdes==null?'':' AND e.cpD in ('.$fdes.')');
+	$solddql2= 'WHERE e.cpD in ('.$nom.')'.
+	    ($fpoi=='_'?'':' AND e.poD='.($fpoi=='x'?'true':'false')).
+	    ($fdes==null?'':' AND e.cpS in ('.$fdes.')');
 	$dqlquery=' AND e.date >= :d1 AND e.date <= :d2';
 	$dqlquery=$dqlquery.($fcat==''?'':' AND e.category='.$fcat);
 	$dqlquery=$dqlquery.($rcom==''?'':' AND e.com LIKE :com');
-	$dqlquery=$dqlquery.($fmoy==''?'':' AND e.moy='.$fmoy);
+	$dqlquery=$dqlquery.($fmoy==''?'':' AND e.moyen='.$fmoy);
 	$dqlquery=$dqlquery.' ORDER BY e.date '.($ord?'DESC':'ASC');
 	$param=array(
-	    'nom' => $nom,
 	    'd1' => $d1,
 	    'd2' => $d2,
 	);
 	$param=($rcom==''?$param:array_merge($param,array('com'=> $rcom)));
-	$param=($fdes==''?$param:array_merge($param,array('des'=> $fdes)));
 
 	$lim=array('nbr' => $nbr,
 	    'deb'=> $deb,
 	    'ord'=> $ord);
 	return array('param'=> $param,
+	    'common_query'=>$startdql.$dqlquery,
+	    'sold_query1'=>$solddql1.$dqlquery,
+	    'sold_query2'=>$solddql2.$dqlquery,
 	    'query'=>$dqlquery,
 	    'des'=>$fdes,
+	    'nom'=>$nom,
 	    'lim'=>$lim,
 	    'cpS'=>$form->get('cpS')->getData(),
 	    'cpcl'=>$cp_cl[1],

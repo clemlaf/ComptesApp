@@ -21,6 +21,12 @@ function clearform(){
             so[j].selected=false;
         }
     }
+    document.getElementById('entree_date1').value='';
+    document.getElementById('entree_date2').value='';
+    document.getElementById('entree_com').value='';
+    document.getElementById('entree_point').value='_';
+    document.getElementById('entree_deb').value='0';
+    update_table();
 }
 
 function duplicate(id,nid){
@@ -127,29 +133,23 @@ function load_table(xhr,templ=null){
 	}
         var tabHtml=tempp.render(data);
         document.getElementById("princ").innerHTML=tabHtml;
+	put_datepicker();
 	show_msg('table chargée');
     }
 
 }
 function show_msg(msg){
-	$(document).ready(function(){
-	    jSuccess(
-		    msg,
-		    {
-				autoHide : true, // added in v2.0
-				clickOverlay : false, // added in v2.0
-				MinWidth : 250,
-				TimeShown : 400,
-				ShowTimeEffect : 100,
-				HideTimeEffect : 100,
-				LongTrip :00,
-				HorizontalPosition : 'right',
-				VerticalPosition : 'top',
-				ShowOverlay : false,
-				ColorOverlay : '#000',
-				OpacityOverlay : 0.3,
-		    }
-		    );
-	}
-	);
+	$.notify(msg, "success");
 }
+function put_datepicker(){
+	jQuery("input[name='date']").each(function(){
+		$("#"+this.id).datepicker({dateFormat:"dd/mm/yy" });
+	});
+	jQuery("input[name='end_date']").each(function(){
+		$("#"+this.id).datepicker({dateFormat:"dd/mm/yy" });
+	});
+	jQuery("input[name='last_date']").each(function(){
+		$("#"+this.id).datepicker({dateFormat:"dd/mm/yy" });
+	});
+}
+$(function(){put_datepicker();});

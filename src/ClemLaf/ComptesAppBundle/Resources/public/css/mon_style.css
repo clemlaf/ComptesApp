@@ -39,15 +39,18 @@ TH {border: groove; border-width: 1pt; background-color:#EEEEEE}
 .form_row {float:left;padding:3px;text-align:center;}
 #entree_nb {width:3em}
 #entree_deb {width:3em}
-#entree_date1{width:8em}
-#entree_date2{width:8em}
+#entree_date1{width:7em}
+#entree_date2{width:7em}
+#entree_point{width:1em}
 #soldepointe{text-align:right;}
 #ptnew{display:none}
-#entree_type{width:10em}
-#entree_type label{display:inline-block;font-size:0.8em;width:10em;vertical-align:middle;text-align:left}
+/*#entree_type{width:10em}*/
+#entree_type label{display:inline;font-size:0.8em;width:10em;vertical-align:middle;text-align:left}
+#entree_type INPUT{display:inline;}
 li {padding-bottom: 5pt}
 
 a.cible {color: black; text-decoration: none}
 a:hover {color:red}
 
 .tabpar{float:left;display:block;padding:1em}
+#ui-datepicker-div {font-size:75%}

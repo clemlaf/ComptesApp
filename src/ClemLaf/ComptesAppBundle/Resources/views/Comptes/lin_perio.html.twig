@@ -2,10 +2,10 @@
   <td><input name="id" type="text" value={{ liid }} readonly size="3" style="Text-align:right">
     <a id="{{ liid }}"></a></td>
   <td>
-	  <input name="last_date" type="text" id="ldat{{ liid }}" value="{{ li.lastDate|date('d/m/Y') }}" size=8 {% if liid!='new' %}onChange="javascript:ajax(rw{{ liid }});"{% endif %} ondblclick="javascript:NewCssCal('dat{{ liid }}','ddMMyyyy', 'arrow');" autocomplete="off">
+	  <input name="last_date" type="text" id="ldat{{ liid }}" value="{{ li.lastDate|date('d/m/Y') }}" size=8 {% if liid!='new' %}onChange="javascript:ajax(rw{{ liid }});"{% endif %}  autocomplete="off">
   </td>
   <td>
-    <input name="end_date" type="text" id="edat{{ liid }}" value="{{ li.endDate|date('d/m/Y') }}" size=8 {% if liid!='new' %}onChange="javascript:ajax(rw{{ liid }});"{% endif %} ondblclick="javascript:NewCssCal('dat{{ liid }}','ddMMyyyy', 'arrow');" autocomplete="off">
+    <input name="end_date" type="text" id="edat{{ liid }}" value="{{ li.endDate|date('d/m/Y') }}" size=8 {% if liid!='new' %}onChange="javascript:ajax(rw{{ liid }});"{% endif %}  autocomplete="off">
   </td>
   <td>
     <input name="mois" type="text" id="mo{{ liid }}" value="{{ li.mois }}" size=8 {% if liid!='new' %}onChange="javascript:ajax(rw{{ liid }});"{% endif %} autocomplete="off">
