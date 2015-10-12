@@ -1,15 +1,5 @@
 function ajax(id)
 {
-    var xhr=null;
-    
-    if (window.XMLHttpRequest) { 
-        xhr = new XMLHttpRequest();
-    }
-    else if (window.ActiveXObject) 
-    {
-        xhr = new ActiveXObject("Microsoft.XMLHTTP");
-    }
-    
     data_array={} 
     //on affiche le message d'acceuil
     var nid=id.querySelectorAll("[name=id]")[0].value;
@@ -36,48 +26,36 @@ function ajax(id)
     data_array['com']=com;
     data_array['pr']=pr;
     data_array['moy']=moy;
-    //on définit l'appel de la fonction au retour serveur
-    if (nid=='new'){
-	    xhr.onreadystatechange= function(){after_ajout(xhr,data_array);};}
-    else
-	xhr.onreadystatechange = function() { alert_ajax(xhr); };
-    //alert(com);
-    xhr.open("POST", "./period/update", true);
-    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhr.send("id="+nid+"&last_date="+ldate+"&end_date="+edate+"&jours="+jours+"&mois="+mois+"&cp_s="+cp_s+"&cp_d="+cp_d+"&cat="+cat+"&com="+com+"&pr="+pr+"&moy="+moy);
+    $.ajax({url: "./period/update",
+	method: "POST",
+	data: data_array,
+    })
+    .done(function(data){
+	    if (nid=='new')
+		after_ajout(data, data_array);
+	    else
+		show_msg( 'données mises à jour');
+	    load_table(data,templ);})
+    .fail(function(){showerr();})
+    ;
 }
     
 function supprime(id){
-    var xhr=null;
-    if (window.XMLHttpRequest) { 
-        xhr = new XMLHttpRequest();
-    }
-    else if (window.ActiveXObject) 
-    {
-        xhr = new ActiveXObject("Microsoft.XMLHTTP");
-    }
-
-    //on définit l'appel de la fonction au retour serveur
-    xhr.onreadystatechange = function() { after_suppr(xhr,nid); };
     var nid=id.querySelectorAll("[name=id]")[0].value;
-    xhr.open("POST", "./period/delete", true);
-    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhr.send("id="+nid);
+    $.ajax({url: "./period/delete",
+	method: "POST",
+	data: "id="+nid,
+    })
+    .done(function(){after_suppr(nid);})
+    .fail(function(){showerr();})
+    ;
 }
 
-function alert_ajax(xhr){
-    if (xhr.readyState==4) 
-    {
-	show_msg( 'données mises à jour');
-    }
-}
 
-function after_ajout(xhr, data_array){
-    if (xhr.readyState==4) 
-    {
+function after_ajout(data,data_array){
 	var ff=document.getElementById("rwnew");
 	var newtr=document.createElement("tr");
-	var newid=xhr.responseText;
+	var newid=data;
 	ff.id="rw"+newid;
 	newtr.id="rwnew";
 	var htmltext=ff.innerHTML;
@@ -90,19 +68,11 @@ function after_ajout(xhr, data_array){
 	ff.querySelectorAll("[name=id]")[0].value=newid;
     ff.parentNode.appendChild(newtr);
 	show_msg( 'enregistrement ajouté');
-    }
 }
 
-function after_suppr(xhr,nid){
-    if (xhr.readyState==4){
-	//var ff=document.getElementById("ff"+nid);
-	//for (var i=0;i<ff.length;i++){
-	//   $(ff[i]).css( { "text-decoration" : "line-through"});
-	//}
+function after_suppr(nid){
 	var ff=document.getElementById("rw"+nid);
 	$(ff).css({"display" : "none"});
 	show_msg( 'enregistrement supprimé');
-    }
-    
 }
     

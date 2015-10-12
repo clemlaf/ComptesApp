@@ -15,5 +15,3 @@ for(var i=0; i<ff.elements.length;i++){
 }
 $("#entree_date1").datepicker({dateFormat:"yy-mm-dd"});
 $("#entree_date2").datepicker({dateFormat:"yy-mm-dd"});
-$.datepicker.setDefaults( $.datepicker.regional[ "fr" ] );
-//$.datepicker.setDefaults( {changeYear:true, changeMonth:true} );

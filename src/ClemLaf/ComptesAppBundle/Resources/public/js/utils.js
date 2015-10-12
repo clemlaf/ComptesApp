@@ -103,29 +103,17 @@ function get_param(){
 }
 
 function update_table(templ=null){
-    var xhr=null;
-
-    if (window.XMLHttpRequest) { 
-        xhr = new XMLHttpRequest();
-    }
-    else if (window.ActiveXObject) 
-    {
-        xhr = new ActiveXObject("Microsoft.XMLHTTP");
-    }
-    xhr.onreadystatechange = function() { load_table(xhr,templ); };
-    //    alert("on tente l'appel suivant "+"update_ajax.php?id="+nid+"&cp_s="+cp_s+"&cp_d="+cp_d+"&cat="+cat+"&com="+com+"&pr="+pr+"&pt="+pt+"&moy="+moy)
-    //on appelle le fichier reponse.txt
-    xhr.open("POST", "./get_table", true);
-    //alert(com);
-    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhr.send(get_param());
+    $.ajax({url: "./get_table",
+	method: "POST",
+	data: get_param(),
+	dataType:"json",
+    })
+    .done(function(data){load_table(data,templ);})
+    .fail(function(){showerr();})
+    ;
 }
 
-function load_table(xhr,templ=null){
-    if (xhr.readyState==4) 
-    {
-	var data=JSON.parse(xhr.responseText);
-        console.log(data);
+function load_table(data,templ=null){
         if (templ!=null){
             var tempp=templ;}
         else{
@@ -135,12 +123,15 @@ function load_table(xhr,templ=null){
         document.getElementById("princ").innerHTML=tabHtml;
 	put_datepicker();
 	show_msg('table chargée');
-    }
 
 }
 function show_msg(msg){
 	$.notify(msg, "success");
 }
+function showerr(){
+	$.notify("Erreur!", "error");
+}
+$.datepicker.setDefaults( $.datepicker.regional[ "fr" ] );
 function put_datepicker(){
 	jQuery("input[name='date']").each(function(){
 		$("#"+this.id).datepicker({dateFormat:"dd/mm/yy" });

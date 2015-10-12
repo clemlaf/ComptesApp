@@ -9,10 +9,9 @@ use Xlab\pChartBundle\pPie;
 
 class GraphController extends Controller
 {
-    public function graph($type, $querystr, $param, $cpsarray, $querystrp1,$querystrp2 ){
+    public static function graph($type, $querystr, $param, $cpsarray, $querystrp1,$querystrp2, $em ){
 	/*On prépare la requête à la base de données et la
 	 * response à la requête http*/	
-	$em=$this->getDoctrine()->getManager();
 	$myData = new pData();
 	$myPicture=new pImage(700,500,$myData);
 	/* Draw the background */
@@ -185,12 +184,12 @@ class GraphController extends Controller
 	case 'pie':
 	    /* une requête spécifique permet de récupérer les données
 	     * nécessaires */
-	    $dql1='SELECT c.id as cid, c.cNam, SUM(e.pr) as sol '.
+	    $dql1='SELECT c.cNam, SUM(e.pr) as sol '.
 		'FROM ClemLafComptesAppBundle:Comptes\Entree e '.
 		'JOIN e.category c '.
 		str_replace('ORDER',' GROUP BY c.id ORDER',$querystrp1);
 		//$params['sold_query1'];
-	    $dql2='SELECT c.id as cid, c.cNam, SUM(e.pr) as sol '.
+	    $dql2='SELECT c.cNam, SUM(e.pr) as sol '.
 		'FROM ClemLafComptesAppBundle:Comptes\Entree e '.
 		'JOIN e.category c '.
 		str_replace('ORDER',' GROUP BY c.id ORDER',$querystrp2);
@@ -203,19 +202,22 @@ class GraphController extends Controller
 		->getResult();
 	    $somcat=array();
 	    foreach($somcat1 as $s){
-		$somcat[$s['cid']]=array('nam'=> $s['cNam'], 'sol'=> $s['sol']);
+		$key=($s['cNam']);
+		$somcat[$key]= $s['sol'];
 	    }
 	    foreach($somcat2 as $s){
-		if(array_key_exists($s['cid'],$somcat))
-		    $somcat[$s['cid']]['sol']=$somcat[$s['cid']]['sol']-$s['sol'];
-		$somcat[$s['cid']]=array('nam' => $s['cNam'], 'sol'=> -$s['sol']);
+		$key=($s['cNam']);
+		if(array_key_exists($key,$somcat)){
+		    $somcat[$key]= $somcat[$key]-$s['sol'];
+		}else
+		    $somcat[$key]= -$s['sol'];
 	    }
-	    //asort($somcat);
+	    asort($somcat);
 	    /*Pour chaque catégorie on remplit les séries*/
 	    foreach($somcat as $c => $s){
-		if($s['sol']<0){
-		    $myData->addPoints($s['nam'],"Labels");
-		    $myData->addPoints(($s['sol'] / 100),"somme");
+		if($s<0){
+		    $myData->addPoints($c,"Labels");
+		    $myData->addPoints(($s / 100),"somme");
 		}
 	    }
 	    $myData->setAbscissa("Labels");      

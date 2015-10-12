@@ -79,11 +79,12 @@ class MainController extends Controller
     }
     public function get_tableAction(Request $request){
 	$params=$this->getParam($request);
+	$em=$this->getDoctrine()->getManager();
 	$response = new JsonResponse();
 	if($params['type']!='table'){
 	    $data=array('image' => GraphController::graph($params['type'],
 		$params['common_query'],$params['param'],$params['cpS'],
-		$params['sold_query1'],$params['sold_query2']));
+		$params['sold_query1'],$params['sold_query2'], $em));
 	}
 	else
 	    $data=$this->createTable($params);
