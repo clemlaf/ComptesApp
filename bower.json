@@ -1,0 +1,21 @@
+{
+  "name": "ComptesApp",
+  "version": "0.0.0",
+  "homepage": "https://github.com/clemlaf/comptesapp",
+  "authors": [
+    "Clément Lafaurie"
+  ],
+  "description": "Paperwork - OpenSource note-taking & archiving",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "bower_components"
+  ],
+  "dependencies": {
+    "jquery": "~2.1",
+    "jquery-ui": "~1.11.4",
+    "notifyjs": "~0.3.2",
+    "twig.js": "~0.8.4"
+  }
+}
