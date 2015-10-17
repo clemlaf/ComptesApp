@@ -1,7 +1,0 @@
-{% extends 'TestTestAppBundle:Test:index.html.twig' %}
-
-{% block content %}
-<div style="text-align:center;width:100%">
-  <img src="data:image/png;base64,{{ render(controller('TestTestAppBundle:Test:graph',{'type':type, 'querystr':test,'param':param, 'cpsarray':cpid})) }}">
-</div>
-{% endblock %}

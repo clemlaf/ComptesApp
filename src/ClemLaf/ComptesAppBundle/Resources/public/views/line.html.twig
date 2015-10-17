@@ -37,12 +37,12 @@
 	  <td style="Text-Align:right" id="so{{ tabid }}">{{ soldes[tabid] / 100 }}</td>
 	  <td>
 	  {% if tabid!='new' %}
-	    <button onClick="javascript:duplicate(rw{{ tabid }}, rwnew);" name="dupl">
+	    <button class="monbutton" onClick="javascript:duplicate(rw{{ tabid }}, rwnew);" name="dupl">
 	  {% else %}
-	    <button onClick="javascript:ajax(rw{{ tabid }});" name="add">
+	    <button class="monbutton" onClick="javascript:ajax(rw{{ tabid }});" name="add">
 	  {% endif %}
-	      <img src="../bundles/clemlafcomptesapp/images/b_snewtbl.png"></button></td>
+	      <span class="icobutton addbutton">add</span></td>
 	  <td>
-	      <button onClick={% if tabid!='new' %}"javascript:supprime(rw{{ tabid }});"{% else %}"javascript:clearline(rw{{ tabid }});"{% endif %} name="supp" type="reset">
-	      <img src="../bundles/clemlafcomptesapp/images/b_drop.png"></button></td>
+	      <button class="monbutton" onClick={% if tabid!='new' %}"javascript:supprime(rw{{ tabid }});"{% else %}"javascript:clearline(rw{{ tabid }});"{% endif %} name="supp" type="reset">
+	      <span class="icobutton delbutton">del</span></td>
     </tr>    

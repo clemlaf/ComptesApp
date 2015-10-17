@@ -8,8 +8,8 @@
     <td>{{ li['id'] }}</td>
     <td>{{ li['name'] }}</td>
     <td>
-      <button onClick="javascript:supprime('{{ type }}','{{ li['id'] }}')">
-	<img src="{{ asset('bundles/clemlafcomptesapp/images/b_drop.png') }}"/>
+      <button class="monbutton" onClick="javascript:supprime('{{ type }}','{{ li['id'] }}')">
+	      <span class="icobutton delbutton">del</span>
       </button>
     </td>
   </tr>

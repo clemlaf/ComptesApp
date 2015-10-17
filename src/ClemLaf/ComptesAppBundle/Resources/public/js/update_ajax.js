@@ -23,7 +23,7 @@ function ajax(id) {
 		show_msg('enregistrement ajouté');
 	    else
 		show_msg('données mises à jour');
-	    load_table(data,templ);})
+	    load_table(data,null);})
     .fail(function(){showerr();})
     ;
 }

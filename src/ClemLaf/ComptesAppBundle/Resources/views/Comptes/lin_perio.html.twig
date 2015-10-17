@@ -43,11 +43,11 @@
     <input id="pr{{ liid }}" name="pr" type="text" value="{{ li.prix/100 }}" size=7 style="Text-Align:right;color:{% if li.prix>0 %}#00AA00{% else %}#AA0000{% endif %}" onChange="javascript:ajax(rw{{ liid }});" autocomplete="off"></td>
   <td>
 	  {% if liid!='new' %}
-    <button onClick="javascript:supprime(rw{{ liid }});" name="supp" type="reset">
-      <img src="{{ asset('bundles/clemlafcomptesapp/images/b_drop.png') }}">
+    <button class="monbutton" onClick="javascript:supprime(rw{{ liid }});" name="supp" type="reset">
+	    <span class="icobutton delbutton">del</span>
 	  {% else %}
-	    <button onClick="javascript:ajax(rw{{ liid }});" name="add">
-      <img src="{{ asset('bundles/clemlafcomptesapp/images/b_snewtbl.png') }}">
+	    <button class="monbutton" onClick="javascript:ajax(rw{{ liid }});" name="add">
+	    <span class="icobutton addbutton">add</span>
 	  {% endif %}
     </button>
   </td>

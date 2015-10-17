@@ -1,6 +1,6 @@
 var template = twig({
 	    id: "table",
-	    href: "../bundles/clemlafcomptesapp/views/table2.html.twig",
+	    href: $("#princ")[0].getAttribute("twigtemplate"),
 	        // this example we'll block until the template is loaded
 		 async: true,
 		//

@@ -54,3 +54,7 @@ a:hover {color:red}
 
 .tabpar{float:left;display:block;padding:1em}
 #ui-datepicker-div {font-size:75%}
+.monbutton{padding:0px}
+.icobutton{background-repeat:no-repeat; overflow:hidden; width:16px; text-indent:-99999px; display:block}
+.addbutton{background-image: url('images/b_snewtbl.png')}
+.delbutton{background-image: url('images/b_drop.png')}
