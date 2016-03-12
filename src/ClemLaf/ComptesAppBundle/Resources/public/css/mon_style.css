@@ -37,15 +37,21 @@ TH {border: groove; border-width: 1pt; background-color:#EEEEEE}
 .special  {background-color: #5DFF89}
 .impaire {background-color: #FFE3B9}
 .form_row {float:left;padding:3px;text-align:center;}
+.type_row {height:1em; overflow:hidden}
+.type_row:hover{height:auto}
+#entree_cpS{height: 3em}
+#entree_cpS:hover{height: 20em}
+#entree_cpD{height: 3em}
+#entree_cpD:hover{height: 20em}
 #entree_nb {width:3em}
 #entree_deb {width:3em}
 #entree_date1{width:7em}
 #entree_date2{width:7em}
-#entree_point{width:1em}
-#soldepointe{text-align:right;}
+#entree_point{width:1em; text-align:center; cursor:pointer}
+#soldepointe{text-align:right; cursor:pointer}
 #ptnew{display:none}
 /*#entree_type{width:10em}*/
-#entree_type label{display:inline;font-size:0.8em;width:10em;vertical-align:middle;text-align:left}
+#entree_type label{display:inline-block;font-size:0.8em;max-width:11em;vertical-align:middle;text-align:left}
 #entree_type INPUT{display:inline;}
 li {padding-bottom: 5pt}
 
