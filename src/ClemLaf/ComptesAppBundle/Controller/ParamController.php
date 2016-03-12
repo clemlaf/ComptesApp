@@ -9,6 +9,7 @@ use ClemLaf\ComptesAppBundle\Entity\Comptes\Periodic;
 use Symfony\Component\HttpFoundation\Request;
 use ClemLaf\ComptesAppBundle\Form\Type\PeriodicType;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ParamController extends Controller{
   public function indexAction(Request $request){
@@ -80,6 +81,16 @@ class ParamController extends Controller{
     }    
     //rediriger vers la page index
     return $this->redirect($this->generateURL('clemlaf_comptes_app_param'));
+  }
+  public function listAction(Request $request){
+    $em=$this->getDoctrine()->getManager();
+    $comptes=$em->createQuery('SELECT c.id, c.cpNam as name FROM ClemLafComptesAppBundle:Comptes\Compte c')->getResult();
+    $categories=$em->createQuery('SELECT c.id, c.cNam as name FROM ClemLafComptesAppBundle:Comptes\Category c ORDER BY c.cNam ASC')->getResult();
+    $moyens=$em->createQuery('SELECT m.id, m.mNam as name FROM ClemLafComptesAppBundle:Comptes\Moyen m')->getResult();
+    $data=array('comptes'=> $comptes, 'categories' => $categories, 'moyens' => $moyens);
+      $response= new JsonResponse();
+      $response->setData($data);
+      return $response;
   }
 }
 ?>

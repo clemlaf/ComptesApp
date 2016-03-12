@@ -76,28 +76,29 @@ function clearline(id){
 
 function get_param(){
     var ff=document.forms[0];
-    param='';
-    sp='';
+    param={};
     top=false;
     for(var i=0;i<ff.elements.length;i++){
 	var el=ff.elements[i];
         if(el.tagName=="SELECT"){
             for(var j=0;j<el.children.length;j++){
                 if(el.children[j].selected){
-                    param=param+sp+
-                        encodeURIComponent(el.name)+
-                        '='+encodeURIComponent(el.children[j].value);
-                    sp='&';
+                  param[el.name]=el.children[j].value
+                    // param=param+sp+
+                    //     encodeURIComponent(el.name)+
+                    //     '='+encodeURIComponent(el.children[j].value);
+                    // sp='&';
                 }
             }
         }else{
 	    if(el.type!="radio" || el.checked){
-            param=param+sp+
-                encodeURIComponent(el.name)+
-                '='+encodeURIComponent(el.value);
+        param[el.name]=el.value
+            // param=param+sp+
+                // encodeURIComponent(el.name)+
+                // '='+encodeURIComponent(el.value);
 	    }
         }
-	sp='&';
+	// sp='&';
     }
     return param;
 }
@@ -122,6 +123,7 @@ function load_table(data,templ=null){
         var tabHtml=tempp.render(data);
         document.getElementById("princ").innerHTML=tabHtml;
 	put_datepicker();
+	$('#soldepointe').on('click',function(){pointage(rwnew);});
 	show_msg('table chargée');
 
 }

@@ -19,6 +19,10 @@ clemlaf_comptes_app_param:
     path: /param
     defaults: { _controller: ClemLafComptesAppBundle:Param:index }
 
+clemlaf_comptes_app_listparam:
+    path: /param/list
+    defaults: { _controller: ClemLafComptesAppBundle:Param:list }
+
 clemlaf_comptes_app_delparam:
     path: /delparam
     defaults: { _controller: ClemLafComptesAppBundle:Param:delete }

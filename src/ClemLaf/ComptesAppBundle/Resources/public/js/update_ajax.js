@@ -1,21 +1,25 @@
 function ajax(id) {
-    var nid=id.querySelectorAll("[name=id]")[0].value;
+  nid=id.querySelectorAll("[name=id]")[0].value;
+  var entree={id:nid,
+    date:id.querySelectorAll("[name=date]")[0].value,
+    cp_s:id.querySelectorAll("[name=cp_s]")[0].value,
+    cp_d:id.querySelectorAll("[name=cp_d]")[0].value,
+    cat:id.querySelectorAll("[name=cat]")[0].value,
+    com:id.querySelectorAll("[name=com]")[0].value,
+    moy:id.querySelectorAll("[name=moy]")[0].value,
+    pr:id.querySelectorAll("[name=pr]")[0].value,
+    pt:(nid!='new' ? id.querySelectorAll("[name=pt]")[0].value : false)};
     console.log(nid);
-    var date=id.querySelectorAll("[name=date]")[0].value;
-    var cp_s=id.querySelectorAll("[name=cp_s]")[0].value;
-    var cp_d=id.querySelectorAll("[name=cp_d]")[0].value;
-    var cat=id.querySelectorAll("[name=cat]")[0].value;
-    var com=id.querySelectorAll("[name=com]")[0].value;
-    var pr=id.querySelectorAll("[name=pr]")[0].value;
-    if(nid!='new')
-	var pt=id.querySelectorAll("[name=pt]")[0].checked;
-    else
-	var pt=false;
-    var moy=id.querySelectorAll("[name=moy]")[0].value;
+    var arr=new Array();
+    arr.push(entree)
+    var par=get_param();
+    par['entrees']=arr;
     //on définit l'appel de la fonction au retour serveur
     $.ajax({url: "./update",
 	method: "POST",
-	data: get_param()+"&id="+nid+"&date="+date+"&cp_s="+cp_s+"&cp_d="+cp_d+"&cat="+cat+"&com="+com+"&pr="+pr+"&pt="+pt+"&moy="+moy,
+	data: par,
+  //processData: false,
+  //contentType: "application/json; charset=UTF-8",
 	dataType:"json",
     })
     .done(function(data){
@@ -30,16 +34,16 @@ function ajax(id) {
 
 function supprime(id){
     var nid=id.querySelectorAll("[name=id]")[0].value;
+    var par=get_param();
+    par['id']=nid
     $.ajax({url: "./delete",
 	method: "POST",
-	data: get_param()+"&id="+nid,
+	data: par,
 	dataType:"json",
     })
     .done(function(data){
 	    show_msg('enregistrement supprimé');
-	    load_table(data,templ);})
+	    load_table(data,null);})
     .fail(function(){showerr();})
     ;
 }
-
-
