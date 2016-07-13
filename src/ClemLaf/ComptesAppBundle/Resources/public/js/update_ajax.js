@@ -8,7 +8,7 @@ function ajax(id) {
     com:id.querySelectorAll("[name=com]")[0].value,
     moy:id.querySelectorAll("[name=moy]")[0].value,
     pr:id.querySelectorAll("[name=pr]")[0].value,
-    pt:(nid!='new' ? id.querySelectorAll("[name=pt]")[0].value : false)};
+    pt:(nid!='new' ? id.querySelectorAll("[name=pt]")[0].checked : false)};
     console.log(nid);
     var arr=new Array();
     arr.push(entree)

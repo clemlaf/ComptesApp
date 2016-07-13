@@ -76,7 +76,8 @@ function clearline(id){
 
 function get_param(){
     var ff=document.forms[0];
-    param={};
+    param=$("form[name='entree']").serializeObject();
+    /*param={};
     top=false;
     for(var i=0;i<ff.elements.length;i++){
 	var el=ff.elements[i];
@@ -99,7 +100,7 @@ function get_param(){
 	    }
         }
 	// sp='&';
-    }
+}*/
     return param;
 }
 
@@ -124,6 +125,7 @@ function load_table(data,templ=null){
         document.getElementById("princ").innerHTML=tabHtml;
 	put_datepicker();
 	$('#soldepointe').on('click',function(){pointage(rwnew);});
+  $('#entree__token').val(data['token']);
 	show_msg('table chargée');
 
 }
